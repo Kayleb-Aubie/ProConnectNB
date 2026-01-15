@@ -2,25 +2,34 @@ import 'dart:convert';
 import 'dart:io';
 
 class Api {
-  final String baseUrl = "http://10.0.2.2:5000"; // change to your backend (render) URL
+  final String baseUrl = "https://proconnectnb-d2bxe6embxg2e7h7.eastus2-01.azurewebsites.net"; // URL (Azure backend)
 
   Future<String> getMessage() async {
     final client = HttpClient();
 
-    try {
+    try 
+    {
       final request = await client.getUrl(Uri.parse("$baseUrl/api/users/1"));
       final response = await request.close();
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200) 
+      {
         final body = await response.transform(utf8.decoder).join();
         return body;
-      } else {
+      } 
+      else 
+      {
         return "Error: ${response.statusCode}";
       }
-    } catch (e) {
-      return "Exception: $e";
-    } finally {
+    } 
+    catch (ex) 
+    {
+      return "Exception durant l'exécution du api: $ex";
+    } 
+    finally 
+    {
       client.close();
     }
+
   }
 }
