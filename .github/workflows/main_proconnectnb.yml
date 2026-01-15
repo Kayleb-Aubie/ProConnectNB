@@ -50,4 +50,4 @@ jobs:
           app-name: 'ProConnectNB'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_1F800A9431EE42E9AE407E329EC6888C }}
-          package: .
+          package: ./backend-app
