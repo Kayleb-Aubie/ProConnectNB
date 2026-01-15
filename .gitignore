@@ -1,0 +1,122 @@
+##############################
+# VS CODE
+##############################
+.vscode/
+.history/
+*.code-workspace
+
+##############################
+# FLUTTER / DART
+##############################
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+flutter_export_environment.sh
+
+# Flutter plugins
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Web (Flutter)
+lib/generated_plugin_registrant.dart
+
+##############################
+# iOS
+##############################
+ios/Flutter/.last_build_id
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/ServiceDefinitions.json
+ios/Runner/GeneratedPluginRegistrant.*
+
+##############################
+# ANDROID
+##############################
+android/.gradle/
+android/local.properties
+android/app/debug/
+android/app/profile/
+android/app/release/
+
+# Android signing keys (IMPORTANT)
+android/key.properties
+android/app/*.keystore
+
+##############################
+# ASP.NET CORE / C#
+##############################
+bin/
+obj/
+*.user
+*.suo
+*.userprefs
+*.csproj.user
+*.dbmdl
+*.jfm
+*.pdb
+*.cache/
+*.log
+
+# Rider / JetBrains
+.idea/
+
+# Visual Studio
+.vs/
+
+##############################
+# ENVIRONMENT / SECRETS
+##############################
+*.env
+.env.*
+appsettings.Development.json
+appsettings.Production.json
+appsettings.Local.json
+appsettings.*.json
+
+# User Secrets (parfois copiés par erreur)
+**/secrets.json
+
+##############################
+# POSTGRES / DATABASE
+##############################
+*.sql
+*.dump
+*.backup
+
+##############################
+# OS JUNK
+##############################
+.DS_Store
+Thumbs.db
+
+##############################
+# MISC
+##############################
+*.class
+*.pyc
+*.swp
+.atom/
+.build/
+.buildlog/
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+##############################
+# INTELLIJ / JETBRAINS
+##############################
+*.iml
+*.ipr
+*.iws
+.idea/
+
+##############################
+# COVERAGE / SYMBOLS
+##############################
+coverage/
+app.*.symbols
+app.*.map.json

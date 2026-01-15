@@ -1,0 +1,118 @@
+# 📦 Nom du Projet
+*Application Full‑Stack : Flutter + ASP.NET Core + PostgreSQL*
+
+## 🚀 Aperçu
+Ce projet est une application full‑stack composée de :
+- Flutter pour le frontend (mobile)
+- ASP.NET Core pour l’API backend
+- PostgreSQL (hébergé sur Neon)
+- VS Code comme environnement principal
+
+L’objectif est de fournir une architecture propre, simple à cloner, lancer et faire évoluer pour tous les membres de l’équipe.
+
+## 🏗️ Structure du Projet
+/frontend        → Application Flutter
+/backend         → API ASP.NET Core
+/infrastructure  → Scripts SQL, migrations, outils DB
+
+## 🔧 Prérequis
+
+### Frontend (Flutter)
+- Flutter SDK (version stable)
+- Dart (inclus avec Flutter)
+
+### Backend (ASP.NET Core)
+- .NET 8 SDK
+- Support C# 12
+
+### Base de données
+- Compte Neon (PostgreSQL cloud)
+
+### Outils recommandés
+- VS Code
+- Git
+- Thunder Client
+
+## 🛠️ Installation
+
+### 1. Cloner le dépôt
+git clone https://github.com/Kayleb-Aubie/ProConnectNB.git
+cd ProConnectNB
+
+# 🖥️ Installation du Backend (ASP.NET Core)
+
+### 1. Aller dans le dossier backend
+cd backend
+
+### 2. Installer les dépendances
+dotnet restore
+
+### 3. Configurer les variables d’environnement
+Créer le fichier :
+backend/appsettings.Development.json
+
+Ajouter :
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=VOTRE_HOST;Port=5432;Database=VOTRE_DB;Username=VOTRE_USER;Password=VOTRE_PASSWORD"
+  }
+}
+
+### 4. Lancer l’API
+dotnet run
+
+API disponible sur :
+https://localhost:5001
+http://localhost:5000
+
+# 📱 Installation du Frontend (Flutter)
+
+### 1. Aller dans le dossier frontend
+cd frontend
+
+### 2. Installer les dépendances
+flutter pub get
+
+### 3. Lancer l’application
+flutter run
+
+# 🗄️ Installation de la Base de Données (PostgreSQL)
+
+### 1. Appliquer le schéma
+psql -h HOST -U USER -d DATABASE -f infrastructure/schema.sql
+
+### 2. Tester la connexion
+SELECT current_database(), current_user(), now();
+
+# 🔐 Variables d’Environnement
+Chaque membre doit créer :
+- appsettings.Development.json (backend)
+- .env (si Flutter en utilise)
+
+Ne jamais commit ces fichiers.
+
+# 🧪 Tests
+
+### Backend :
+dotnet test
+
+### Frontend :
+flutter test
+
+# 📦 Build
+
+### Backend :
+dotnet publish -c Release
+
+### Flutter :
+flutter build apk
+flutter build web
+
+# 📄 Licence
+MIT License
+
+# 🧠 Notes pour l’Équipe
+- Ne jamais commit de secrets ou fichiers d’environnement
+- Ne jamais commit les dossiers de build
+- Respecter le .gitignore
+- Garder backend et frontend synchronisés lors de modifications des modèles API
