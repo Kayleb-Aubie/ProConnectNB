@@ -31,7 +31,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: backend-app
+          name: backend
           path: ./publish
 
   deploy:
@@ -42,7 +42,8 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: backend-app
+          name: backend
+          path: ./backend
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
@@ -50,4 +51,4 @@ jobs:
           app-name: 'ProConnectNB'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_1F800A9431EE42E9AE407E329EC6888C }}
-          package: ./backend-app
+          package: ./backend
