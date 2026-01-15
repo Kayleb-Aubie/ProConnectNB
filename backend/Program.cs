@@ -10,4 +10,6 @@ WebApplication app = builder.Build(); // Construction de l'application (apres av
 
 app.MapControllers(); // Mappe les controllers (endpoints) pour l'application
 
+app.UseDeveloperExceptionPage(); // Page d'exception detaillee pour le developpement (affiche les erreurs dans le navigateur)
+
 app.Run(); // Demarre l'application et ecoute les requetes HTTP entrantes (roulement continu)

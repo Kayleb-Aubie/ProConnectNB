@@ -10,6 +10,7 @@ namespace backend.Controllers;
 public class UserController(UserService service) : ControllerBase { // Injection de dependance (en constructeur) du service layer (addScoped non-necessaire car cest un controller)
     private readonly UserService _service = service; // assignement d'injection de dependance du service layer
 
+/*
     [HttpGet("{id}")] // api/users/1 (associer avec GetUser) (Donc le retour de cette methode sera pour les requetes GET a cette URL)
     public async Task<IActionResult> GetUser(int id) { // id vien de l'URL (endpoint handler)
 
@@ -17,6 +18,11 @@ public class UserController(UserService service) : ControllerBase { // Injection
 
         return Ok(user); // Retourne un code 200 (tout a fonctionner) avec l'utilisateur en format JSON
     }
+    */
 
-
+    [HttpGet("test")] // api/users/test
+    public async Task<IActionResult> Gett() {
+        var message = await _service.Gett();
+        return Ok(message);
+    }
 }

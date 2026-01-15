@@ -9,7 +9,7 @@ class Api {
 
     try 
     {
-      final request = await client.getUrl(Uri.parse("$baseUrl/api/users/1"));
+      final request = await client.getUrl(Uri.parse("$baseUrl/api/users/test"));
       final response = await request.close();
 
       if (response.statusCode == 200) 
