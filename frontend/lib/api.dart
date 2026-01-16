@@ -13,8 +13,9 @@ class Api {
 
       final response = await http.get(url); // Utilisation de http.get
 
-      print("Status: ${response.statusCode}");
+      print("Status: ${response.statusCode}"); // Print dans vscode console
 
+      // Retours sur la app dart en fonction du status code
       if (response.statusCode == 200) 
       {
         return response.body;

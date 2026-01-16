@@ -17,28 +17,34 @@ public class UserService(IConfiguration config) { // Injection de dependance (en
 
             await conn.OpenAsync(); // Force l'ouverture pour détecter les erreurs de connexion
 
+var rows = await conn.QueryAsync("SELECT Id, Prenom FROM users");
+foreach (var row in rows)
+{
+    Console.WriteLine($"ROW: {row.id} - {row.prenom}");
+}
+
             var sql = "SELECT Id, Prenom FROM users WHERE Id = @id"; // Requete SQL pour obtenir l'utilisateur par ID
             var user = await conn.QueryFirstOrDefaultAsync<User>(sql, new { id }); // Execution de la requete avec Dapper
 
-            if (user == null)
+            if (user == null) // Verification si l'utilisateur est null ERREUR 404
             {
-                Console.WriteLine($"Aucun utilisateur trouvé avec l'ID {id}");
+                Console.WriteLine($"Aucun utilisateur trouvé avec l'ID {id}"); // Affiche dans la console sur le navigateur
             }
             else
             {
-                Console.WriteLine($"Utilisateur trouvé: {user.Prenom} (ID: {user.Id})");
+                Console.WriteLine($"Utilisateur trouvé: {user.Prenom} (ID: {user.Id})"); // Affiche dans la console sur le navigateur
             }
 
             return user;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erreur lors de l'obtention de l'utilisateur: {ex.Message}");
+                Console.WriteLine($"Erreur lors de l'obtention de l'utilisateur: {ex.Message}"); // Affiche l'erreur dans la console sur le navigateur
                 return null;
             }
     }
 
-    public async Task<string> GetTestMessage() 
+    public async Task<string> GetTestMessage() // Methode de test simple sans de connection a la base de donnees
     {
         return "Test reussi";
     }
