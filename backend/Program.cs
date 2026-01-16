@@ -12,4 +12,8 @@ app.MapControllers(); // Mappe les controllers (endpoints) pour l'application
 
 app.UseDeveloperExceptionPage(); // Page d'exception detaillee pour le developpement (affiche les erreurs dans le navigateur)
 
+app.UseRouting(); // Active le routage des requetes HTTP vers les endpoints (controllers)
+
+app.UseAuthorization(); // Middleware d'autorisation (verifie les droits d'acces aux ressources)
+
 app.Run(); // Demarre l'application et ecoute les requetes HTTP entrantes (roulement continu)

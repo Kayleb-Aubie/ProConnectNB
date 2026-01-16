@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 class Api {
-  final String baseUrl = "https://proconnectnb-d2bxe6embxg2e7h7.eastus2-01.azurewebsites.net"; // URL (Azure backend)
+  final String baseUrl = "https://proconnectnb-d2bxe6embxg2e7h7.eastus2-01.azurewebsites.net/api/users/test"; // URL (Azure backend)
 
   Future<String> getMessage() async {
     final client = HttpClient();
