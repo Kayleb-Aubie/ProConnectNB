@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http; // Import du package http pour les requetes HTTP qui sont plus universelles
+import 'secrets.dart'; // Import du fichier secrets.dart pour acceder a la cle API
 
 class Api {
   final String baseUrl = "https://proconnectnb-d2bxe6embxg2e7h7.eastus2-01.azurewebsites.net";
@@ -11,7 +12,8 @@ class Api {
 
       print("URL: $url"); // Log de l'URL
 
-      final response = await http.get(url); // Utilisation de http.get
+      // TODO: Ajouter les headers si necessaire
+      final response = await http.get(url);//, headers: defaultHeaders()); // Requete GET avec headers
 
       print("Status: ${response.statusCode}"); // Print dans vscode console
 
@@ -43,7 +45,7 @@ class Api {
     {
       print(baseUrl); // print de baseUrl pour debug
 
-      final HttpClientRequest request = await client.getUrl(Uri.parse("$baseUrl/api/users/test"),); // Creation de la requete GET
+      final HttpClientRequest request = await client.getUrl(Uri.parse("$baseUrl/api/users/test")); // Creation de la requete GET
 
       final HttpClientResponse response = await request.close(); // Envoi de la requete et attente de la reponse
 
@@ -65,6 +67,13 @@ class Api {
     {
       client.close();
     }
+  }
+
+  Map<String, String> defaultHeaders() {
+    return {
+      "Content-Type": "application/json",
+      "x-api-key": Secrets.apiKey,
+    };
   }
 
 }

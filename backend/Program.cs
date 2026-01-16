@@ -8,6 +8,32 @@ builder.Services.AddScoped<UserService>(); // Enregistrement du service UserServ
 
 WebApplication app = builder.Build(); // Construction de l'application (apres avoir configurer les services et le builder)
 
+// TODO: Enlever les commentaires si on veut utiliser l'API Key
+// Middleware pour la gestion de l'API Key (regarder si on a la bonne clef dans les headers)
+/*
+app.Use(async (context, next) =>
+{
+    var config = context.RequestServices.GetRequiredService<IConfiguration>();
+    var apiKey = config["ApiKey"];
+
+    if (!context.Request.Headers.TryGetValue("x-api-key", out var providedKey))
+    {
+        context.Response.StatusCode = 401;
+        await context.Response.WriteAsync("Missing API Key");
+        return;
+    }
+
+    if (providedKey != apiKey)
+    {
+        context.Response.StatusCode = 403;
+        await context.Response.WriteAsync("Invalid API Key");
+        return;
+    }
+
+    await next();
+});
+*/
+
 app.MapControllers(); // Mappe les controllers (endpoints) pour l'application
 
 app.UseDeveloperExceptionPage(); // Page d'exception detaillee pour le developpement (affiche les erreurs dans le navigateur)

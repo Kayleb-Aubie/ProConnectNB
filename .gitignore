@@ -14,6 +14,7 @@
 .pub/
 build/
 flutter_export_environment.sh
+secrets.dart
 
 # Flutter plugins
 .flutter-plugins
