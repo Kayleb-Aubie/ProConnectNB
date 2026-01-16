@@ -12,7 +12,7 @@ class Api {
 
       final HttpClientRequest request = await client.getUrl(Uri.parse("$baseUrl/api/users/1"),);
 
-      print(request.uri.toString());
+      print(request.uri.toString()); // Pour debug: Affiche l'URL de la requete
 
       final HttpClientResponse response = await request.close();
 

@@ -9,8 +9,8 @@ public class UserService(IConfiguration config) { // Injection de dependance (en
 
     public async Task<User?> GetUserById(int id) 
     {
-        Console.WriteLine(_config.GetConnectionString("DefaultConnection")); // Pour debug: Affiche la connection string dans la console
-        
+        try
+        {
         using NpgsqlConnection conn = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection")); // Creation de la connexion a la base de donnees (Npgsql pour PostgreSQL) avec la connection string du appsettings.json
 
         // Nous allons utiliser Dapper pour executer des requetes SQL de maniere simple et efficace
@@ -18,6 +18,12 @@ public class UserService(IConfiguration config) { // Injection de dependance (en
 
         // Async car operation de base de donnees (I/O bound) qui peut prendre du temps
         return await conn.QueryFirstOrDefaultAsync<User>(sql, new { id }); // Dapper mappe automatiquement les colonnes SQL aux proprietes C# (par nom) ceci retourne un User avec ses proprietes remplies
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur lors de l'obtention de l'utilisateur: {ex.Message}");
+            return null;
+        }
     }
 
     public async Task<string> GetTestMessage() 
