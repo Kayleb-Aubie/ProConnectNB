@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart' as http; // Import du package http pour les requetes HTTP qui sont plus universelles
 
 class Api {
   final String baseUrl = "https://proconnectnb-d2bxe6embxg2e7h7.eastus2-01.azurewebsites.net";
@@ -37,20 +37,20 @@ class Api {
   }
 
   Future<String> getTest() async {
-    final client = HttpClient();
+    final client = HttpClient(); // Utilisation de HttpClient donc pas besoin de package http (tres basique)
 
     try 
     {
-      print(baseUrl);
+      print(baseUrl); // print de baseUrl pour debug
 
-      final HttpClientRequest request = await client.getUrl(Uri.parse("$baseUrl/api/users/test"),);
+      final HttpClientRequest request = await client.getUrl(Uri.parse("$baseUrl/api/users/test"),); // Creation de la requete GET
 
-      final HttpClientResponse response = await request.close();
+      final HttpClientResponse response = await request.close(); // Envoi de la requete et attente de la reponse
 
       if (response.statusCode == 200) 
       {
-        final String body = await response.transform(utf8.decoder).join();
-        return body;
+        final String body = await response.transform(utf8.decoder).join(); // Lecture du corps de la reponse et transformation en String
+        return body; // Retour du corps de la reponse au caler (main.dart)
       }
       else 
       {

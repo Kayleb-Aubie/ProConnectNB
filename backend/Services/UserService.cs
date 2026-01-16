@@ -7,7 +7,7 @@ namespace backend.Services;
 public class UserService(IConfiguration config) { // Injection de dependance (en constructeur) de la configuration a partir du Program.cs (addScoped necessaire car se nest pas un controller)
     private readonly IConfiguration _config = config; // assignment de la configuration
 
-    public async Task<User?> GetUserById(int id)
+    public async Task<User?> GetUserById(int id) // Methode pour obtenir un utilisateur par son ID
     {
         try
         {
@@ -31,7 +31,7 @@ public class UserService(IConfiguration config) { // Injection de dependance (en
 
     public async Task<string> GetTestMessage() // Methode de test simple sans de connection a la base de donnees
     {
-        return "Test reussi";
+        return "Test reussi"; // Retourne un message de test au controller
     }
 
 }

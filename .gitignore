@@ -76,6 +76,7 @@ appsettings.Development.json
 appsettings.Production.json
 appsettings.Local.json
 appsettings.*.json
+appsettings.json
 
 # User Secrets (sometimes copied by mistake)
 **/secrets.json

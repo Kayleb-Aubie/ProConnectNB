@@ -24,11 +24,11 @@ public class UserController(UserService service) : ControllerBase { // Injection
     }
     
     [HttpGet("test")] // api/users/test
-    public async Task<IActionResult> GetTest() 
+    public async Task<IActionResult> GetTest()  // requete GET a cette URL
     {
-        var message = await _service.GetTestMessage();
+        var message = await _service.GetTestMessage(); // Appel au service layer pour obtenir un message de test
 
-        return Ok(message);
+        return Ok(message); // Retourne un code 200 avec le message en format JSON
     }
 
 }
