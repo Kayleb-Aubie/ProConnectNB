@@ -31,7 +31,6 @@ L’objectif est de fournir une architecture propre, simple à cloner, lancer et
 ### Outils recommandés
 - VS Code
 - Git
-- Thunder Client
 
 ## 🛠️ Installation
 
@@ -49,21 +48,24 @@ dotnet restore
 
 ### 3. Configurer les variables d’environnement
 Créer le fichier :
-backend/appsettings.Development.json
+backend/appsettings.json
 
-Ajouter :
 {
+  "ApiKey": "*****",
   "ConnectionStrings": {
-    "DefaultConnection": "Host=VOTRE_HOST;Port=5432;Database=VOTRE_DB;Username=VOTRE_USER;Password=VOTRE_PASSWORD"
-  }
+    "DefaultConnection": "Host=;Port=;Database=;Username=;Password=;SslMode=Require;Trust Server Certificate=true;"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
 }
 
 ### 4. Lancer l’API
 dotnet run
-
-API disponible sur :
-https://localhost:5001
-http://localhost:5000
 
 # 📱 Installation du Frontend (Flutter)
 
@@ -86,30 +88,10 @@ SELECT current_database(), current_user(), now();
 
 # 🔐 Variables d’Environnement
 Chaque membre doit créer :
-- appsettings.Development.json (backend)
+- appsettings.json (backend)
 - .env (si Flutter en utilise)
 
 Ne jamais commit ces fichiers.
-
-# 🧪 Tests
-
-### Backend :
-dotnet test
-
-### Frontend :
-flutter test
-
-# 📦 Build
-
-### Backend :
-dotnet publish -c Release
-
-### Flutter :
-flutter build apk
-flutter build web
-
-# 📄 Licence
-MIT License
 
 # 🧠 Notes pour l’Équipe
 - Ne jamais commit de secrets ou fichiers d’environnement
