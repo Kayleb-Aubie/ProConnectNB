@@ -38,7 +38,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> callApiDB() async {
     final Api api = Api();
-    final String response = await api.getTest();
+    final String response = await api.getUser();
 
     setState(() {
       resultat = response;

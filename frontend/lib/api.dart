@@ -12,6 +12,8 @@ class Api {
 
       final HttpClientRequest request = await client.getUrl(Uri.parse("$baseUrl/api/users/1"),);
 
+      print(request.uri.toString());
+
       final HttpClientResponse response = await request.close();
 
       if (response.statusCode == 200) 

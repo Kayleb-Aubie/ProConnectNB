@@ -9,6 +9,8 @@ public class UserService(IConfiguration config) { // Injection de dependance (en
 
     public async Task<User?> GetUserById(int id) 
     {
+        Console.WriteLine(_config.GetConnectionString("DefaultConnection")); // Pour debug: Affiche la connection string dans la console
+        
         using NpgsqlConnection conn = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection")); // Creation de la connexion a la base de donnees (Npgsql pour PostgreSQL) avec la connection string du appsettings.json
 
         // Nous allons utiliser Dapper pour executer des requetes SQL de maniere simple et efficace
