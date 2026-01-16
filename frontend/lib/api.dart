@@ -1,25 +1,28 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:http/http.dart' as http;
 
 class Api {
-  final String baseUrl ="https://proconnectnb-d2bxe6embxg2e7h7.eastus2-01.azurewebsites.net"; // URL (Azure backend)
+  final String baseUrl = "https://proconnectnb-d2bxe6embxg2e7h7.eastus2-01.azurewebsites.net";
 
   Future<String> getUser() async {
-    final client = HttpClient();
-
     try {
-      print(baseUrl);
+      final url = Uri.parse("$baseUrl/api/users/1"); // Exemple avec l'ID utilisateur 1
 
-      final HttpClientRequest request = await client.getUrl(Uri.parse("$baseUrl/api/users/1"),);
+      print("URL: $url"); // Log de l'URL
 
-      print(request.uri.toString()); // Pour debug: Affiche l'URL de la requete
+      final response = await http.get(url); // Utilisation de http.get
 
-      final HttpClientResponse response = await request.close();
+      print("Status: ${response.statusCode}");
 
       if (response.statusCode == 200) 
       {
-        final String body = await response.transform(utf8.decoder).join();
-        return body;
+        return response.body;
+      } 
+      else if 
+      (response.statusCode == 404) 
+      {
+        return "Utilisateur introuvable";
       } 
       else 
       {
@@ -28,11 +31,7 @@ class Api {
     } 
     catch (ex) 
     {
-      return "Exception durant l'exécution du api DB: $ex";
-    } 
-    finally 
-    {
-      client.close();
+      return "Exception: $ex";
     }
   }
 

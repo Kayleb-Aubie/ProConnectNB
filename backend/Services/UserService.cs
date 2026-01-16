@@ -17,6 +17,12 @@ public class UserService(IConfiguration config) { // Injection de dependance (en
 
             await conn.OpenAsync(); // Force l'ouverture pour détecter les erreurs de connexion
 
+            var rows = await conn.QueryAsync("SELECT id, prenom FROM users");
+            foreach (var row in rows)
+            {
+                Console.WriteLine($"ROW: {row.id} - {row.prenom}");
+            }
+
             var sql = "SELECT id, prenom FROM users WHERE id = @id"; // Requete SQL pour obtenir l'utilisateur par ID
             var user = await conn.QueryFirstOrDefaultAsync<User>(sql, new { id }); // Execution de la requete avec Dapper
 
