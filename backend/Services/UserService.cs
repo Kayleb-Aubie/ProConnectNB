@@ -7,23 +7,35 @@ namespace backend.Services;
 public class UserService(IConfiguration config) { // Injection de dependance (en constructeur) de la configuration a partir du Program.cs (addScoped necessaire car se nest pas un controller)
     private readonly IConfiguration _config = config; // assignment de la configuration
 
-    public async Task<User?> GetUserById(int id) 
+    public async Task<User?> GetUserById(int id)
     {
         try
         {
-        using NpgsqlConnection conn = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection")); // Creation de la connexion a la base de donnees (Npgsql pour PostgreSQL) avec la connection string du appsettings.json
+            var connectionString = _config.GetConnectionString("DefaultConnection"); // Obtention de la chaine de connexion a la base de donnees
 
-        // Nous allons utiliser Dapper pour executer des requetes SQL de maniere simple et efficace
-        var sql = "SELECT id, prenom FROM users WHERE id = @id"; // Requete SQL pour obtenir un utilisateur par son ID
+            using NpgsqlConnection conn = new NpgsqlConnection(connectionString); // Creation de la connexion a la base de donnees
 
-        // Async car operation de base de donnees (I/O bound) qui peut prendre du temps
-        return await conn.QueryFirstOrDefaultAsync<User>(sql, new { id }); // Dapper mappe automatiquement les colonnes SQL aux proprietes C# (par nom) ceci retourne un User avec ses proprietes remplies
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Erreur lors de l'obtention de l'utilisateur: {ex.Message}");
-            return null;
-        }
+            await conn.OpenAsync(); // Force l'ouverture pour détecter les erreurs de connexion
+
+            var sql = "SELECT id, prenom FROM users WHERE id = @id"; // Requete SQL pour obtenir l'utilisateur par ID
+            var user = await conn.QueryFirstOrDefaultAsync<User>(sql, new { id }); // Execution de la requete avec Dapper
+
+            if (user == null)
+            {
+                Console.WriteLine($"Aucun utilisateur trouvé avec l'ID {id}");
+            }
+            else
+            {
+                Console.WriteLine($"Utilisateur trouvé: {user.Prenom} (ID: {user.Id})");
+            }
+
+            return user;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erreur lors de l'obtention de l'utilisateur: {ex.Message}");
+                return null;
+            }
     }
 
     public async Task<string> GetTestMessage() 

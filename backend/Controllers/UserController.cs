@@ -15,6 +15,11 @@ public class UserController(UserService service) : ControllerBase { // Injection
 
         var user = await _service.GetUserById(id); // Appel au service layer pour obtenir l'utilisateur (besoin de await pour les methodes async)
 
+        if (user == null) 
+        {
+            return NotFound($"Aucun utilisateur trouvé avec l'ID {id}"); // Retourne un code 404 (utilisateur non trouve)
+        }
+
         return Ok(user); // Retourne un code 200 (tout a fonctionner) avec l'utilisateur en format JSON
     }
     
@@ -22,7 +27,7 @@ public class UserController(UserService service) : ControllerBase { // Injection
     public async Task<IActionResult> GetTest() 
     {
         var message = await _service.GetTestMessage();
-        
+
         return Ok(message);
     }
 
