@@ -17,7 +17,7 @@ public class UserController(UserService service) : ControllerBase { // Injection
 
         if (user == null) 
         {
-            return NotFound($"Aucun utilisateur trouvé avec l'ID {id}"); // Retourne un code 404 (utilisateur non trouve)
+            return NotFound($"Aucun utilisateur trouver avec l'ID {id}"); // Retourne un code 404 (utilisateur non trouve)
         }
 
         return Ok(user); // Retourne un code 200 (tout a fonctionner) avec l'utilisateur en format JSON
