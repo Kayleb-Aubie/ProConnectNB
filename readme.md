@@ -64,6 +64,14 @@ backend/appsettings.json
   "AllowedHosts": "*"
 }
 
+Créer le fichier :
+frontend/lib/secrets.dart
+
+class Secrets
+{
+  static const String apiKey = "";
+}
+
 ### 4. Lancer l’API
 dotnet run
 
@@ -89,6 +97,7 @@ SELECT current_database(), current_user(), now();
 # 🔐 Variables d’Environnement
 Chaque membre doit créer :
 - appsettings.json (backend)
+- secrets.dart (ApiKey)
 - .env (si Flutter en utilise)
 
 Ne jamais commit ces fichiers.
