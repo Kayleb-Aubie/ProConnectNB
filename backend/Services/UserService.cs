@@ -34,7 +34,7 @@ public class UserService(IConfiguration config) // Injection de dependance (en c
 
     public async Task<string> GetTestMessage() // Methode de test simple sans de connection a la base de donnees
     {
-        var conn = Environment.GetEnvironmentVariable("DefaultConnection");
+        var conn = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
 
         if (conn == null)
             return "connection string est null";
