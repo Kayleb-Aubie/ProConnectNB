@@ -14,6 +14,8 @@ public class UserService(IConfiguration config) // Injection de dependance (en c
         {
             var connectionString = _config.GetConnectionString("DefaultConnection"); // Obtention de la chaine de connexion a la base de donnees
 
+            var conectioString = Environment.GetEnvironmentVariable("DefaultConnection");
+
             using NpgsqlConnection conn = new NpgsqlConnection(connectionString); // Creation de la connexion a la base de donnees
 
             await conn.OpenAsync(); // Force l'ouverture pour détecter les erreurs de connexion
@@ -32,7 +34,7 @@ public class UserService(IConfiguration config) // Injection de dependance (en c
 
     public async Task<string> GetTestMessage() // Methode de test simple sans de connection a la base de donnees
     {
-        var conn = _config.GetConnectionString("DefaultConnection");
+        var conn = Environment.GetEnvironmentVariable("DefaultConnection");
 
         if (conn == null)
             return "connection string est null";
