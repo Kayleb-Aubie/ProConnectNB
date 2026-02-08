@@ -18,7 +18,7 @@ public class UserService(IConfiguration config) // Injection de dependance (en c
 
             await conn.OpenAsync(); // Force l'ouverture pour détecter les erreurs de connexion
 
-            var sql = "SELECT id AS Id, prenom AS Prenom FROM users WHERE Id = @id"; // Requete SQL pour obtenir l'utilisateur par ID
+            var sql = "SELECT id AS Id, prenom AS Prenom FROM users WHERE id = @id"; // Requete SQL pour obtenir l'utilisateur par ID
             var user = await conn.QueryFirstOrDefaultAsync<User>(sql, new { id }); // Execution de la requete avec Dapper
 
             return user;
@@ -32,7 +32,7 @@ public class UserService(IConfiguration config) // Injection de dependance (en c
 
     public async Task<string> GetTestMessage() // Methode de test simple sans de connection a la base de donnees
     {
-        return "Test reussi"; // Retourne un message de test au controller
+        return _config.GetConnectionString("DefaultConnection"); // Retourne un message de test au controller
     }
 
 }
