@@ -5,9 +5,9 @@ using Microsoft.VisualBasic;
 
 namespace backend.Services;
 
-public class UserService(IConfiguration config) // Injection de dependance (en constructeur) de la configuration a partir du Program.cs (addScoped necessaire car se nest pas un controller)
+public class UserService()//IConfiguration config) // Injection de dependance (en constructeur) de la configuration a partir du Program.cs (addScoped necessaire car se nest pas un controller) (Mais on a pas azure payant)
 {
-    private readonly IConfiguration _config = config; // assignment de la configuration
+    //private readonly IConfiguration _config = config; // assignment de la configuration (serait utiliser dans le cas ou on aurait azure payant car free tier naccepte pas linjection des connections strings (seulement les vraiables dans le app settings))
 
     public async Task<User?> GetUserById(int id) // Methode pour obtenir un utilisateur par son ID
     {

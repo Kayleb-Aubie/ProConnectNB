@@ -4,7 +4,7 @@ var builder = WebApplication.CreateBuilder(args); // Configuration et services D
 
 builder.Services.AddControllers(); // Ajout des controllers automatique (API endpoints) (UserController.cs)
 //(Scoped = une instance par requete http)
-builder.Services.AddScoped<UserService>(); // Enregistrement du service UserService pour l'injection de dependance car se nest pas un controller donc pas fait automatique par le framework
+//builder.Services.AddScoped<UserService>(); // Enregistrement du service UserService pour l'injection de dependance car se nest pas un controller donc pas fait automatique par le framework (Mais on lutilise pas car on a pas azure payant)
 
 WebApplication app = builder.Build(); // Construction de l'application (apres avoir configurer les services et le builder)
 

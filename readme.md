@@ -46,24 +46,7 @@ cd backend
 ### 2. Installer les dépendances
 dotnet restore
 
-### 3. Configurer les variables d’environnement
-Créer le fichier :
-backend/appsettings.json
-
-{
-  "ApiKey": "*****",
-  "ConnectionStrings": {
-    "DefaultConnection": "Host=;Port=;Database=;Username=;Password=;SslMode=Require;Trust Server Certificate=true;"
-  },
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning"
-    }
-  },
-  "AllowedHosts": "*"
-}
-
+### 3. Configurer les variables d’environnement pour prevenir le spam sur le serveur Azure (future)
 Créer le fichier :
 frontend/lib/secrets.dart
 
@@ -86,19 +69,9 @@ flutter pub get
 ### 3. Lancer l’application
 flutter run
 
-# 🗄️ Installation de la Base de Données (PostgreSQL)
-
-### 1. Appliquer le schéma
-psql -h HOST -U USER -d DATABASE -f infrastructure/schema.sql
-
-### 2. Tester la connexion
-SELECT current_database(), current_user(), now();
-
 # 🔐 Variables d’Environnement
 Chaque membre doit créer :
-- appsettings.json (backend)
 - secrets.dart (ApiKey)
-- .env (si Flutter en utilise)
 
 Ne jamais commit ces fichiers.
 
