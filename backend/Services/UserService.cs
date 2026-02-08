@@ -32,7 +32,12 @@ public class UserService(IConfiguration config) // Injection de dependance (en c
 
     public async Task<string> GetTestMessage() // Methode de test simple sans de connection a la base de donnees
     {
-        return _config.GetConnectionString("DefaultConnection"); // Retourne un message de test au controller
+        var conn = _config.GetConnectionString("DefaultConnection");
+
+        if (conn == null)
+            return "connection string est null";
+        else
+            return conn;
     }
 
 }
