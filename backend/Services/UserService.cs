@@ -33,7 +33,7 @@ public class UserService(IConfiguration config) // Injection de dependance (en c
 
     public async Task<string> GetTestMessage()
     {
-        String? conn = Environment.GetEnvironmentVariable("DefaultConnection");
+        String? conn = Environment.GetEnvironmentVariable("ApiKey");
 
         if (conn == null)
             return "NUlllll";
