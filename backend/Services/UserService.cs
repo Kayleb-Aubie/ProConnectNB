@@ -31,14 +31,18 @@ public class UserService(IConfiguration config) // Injection de dependance (en c
         }
     }
 
-    public async Task<string> GetTestMessage() // Methode de test simple sans de connection a la base de donnees
-    {
-        var conn = Environment.GetEnvironmentVariables();
+    public async Task<string> GetTestMessage()
+{
+    var env = Environment.GetEnvironmentVariables();
 
-        if (conn == null)
-            return "connection string est null";
-        else
-            return "ok";
+    var sb = new System.Text.StringBuilder();
+
+    foreach (System.Collections.DictionaryEntry entry in env)
+    {
+        sb.AppendLine($"{entry.Key} = {entry.Value}");
     }
+
+    return sb.ToString();
+}
 
 }
