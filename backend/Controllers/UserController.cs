@@ -7,7 +7,8 @@ namespace backend.Controllers;
 [Route("api/users")] // l'URL de base pour ce controller
 
 //class qui gere les endpoints relatifs aux utilisateurs
-public class UserController(UserService service) : ControllerBase { // Injection de dependance (en constructeur) du service layer (addScoped non-necessaire car cest un controller)
+public class UserController(UserService service) : ControllerBase // Injection de dependance (en constructeur) du service layer (addScoped non-necessaire car cest un controller)
+{
     private readonly UserService _service = service; // assignement d'injection de dependance du service layer
 
     [HttpGet("{id}")] // api/users/1 (associer avec GetUser) (Donc le retour de cette methode sera pour les requetes GET a cette URL)

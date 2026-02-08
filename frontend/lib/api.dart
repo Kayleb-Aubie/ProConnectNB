@@ -3,11 +3,14 @@ import 'dart:io';
 import 'package:http/http.dart' as http; // Import du package http pour les requetes HTTP qui sont plus universelles
 import 'secrets.dart'; // Import du fichier secrets.dart pour acceder a la cle API
 
-class Api {
+class Api 
+{
   final String baseUrl = "https://proconnectnb-d2bxe6embxg2e7h7.eastus2-01.azurewebsites.net";
 
-  Future<String> getUser() async {
-    try {
+  Future<String> getUser() async 
+  {
+    try 
+    {
       final url = Uri.parse("$baseUrl/api/users/1"); // Exemple avec l'ID utilisateur 1
 
       print("URL: $url"); // Log de l'URL
@@ -38,7 +41,8 @@ class Api {
     }
   }
 
-  Future<String> getTest() async {
+  Future<String> getTest() async 
+  {
     final client = HttpClient(); // Utilisation de HttpClient donc pas besoin de package http (tres basique)
 
     try 
@@ -58,7 +62,7 @@ class Api {
       {
         return "Erreur: ${response.statusCode}";
       }
-    } 
+    }
     catch (ex) 
     {
       return "Exception durant l'exécution du api Test: $ex";
@@ -69,10 +73,12 @@ class Api {
     }
   }
 
-  Map<String, String> defaultHeaders() {
-    return {
+  Map<String, String> defaultHeaders() 
+  {
+    return
+    {
       "Content-Type": "application/json",
-      "x-api-key": Secrets.apiKey,
+      "x-api-key": Secrets.apiKey
     };
   }
 

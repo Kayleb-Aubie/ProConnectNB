@@ -1,20 +1,24 @@
-import 'package:flutter/material.dart';
-import 'api.dart';
-
-void main() {
+import 'package:flutter/material.dart'; // Bibliotheque Flutter de base pour les widgets (Material Design)
+import 'api.dart'; // Importation de la classe Api pour les appels API
+void main() 
+{
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatelessWidget 
+{
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context) 
+  {
+    return MaterialApp
+    (
       title: 'API Demo',
-      theme: ThemeData(
+      theme: ThemeData
+      (
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue)
       ),
-      home: HomePage(),
+      home: HomePage()
     );
   }
 }
@@ -27,56 +31,68 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String resultat = "Appuyer sur un bouton pour appeler l'API";
 
-  Future<void> callApiTest() async {
+  Future<void> callApiTest() async // async pour etre capable de faire autre choses en meme temp
+  {
     final Api api = Api();
-    final response = await api.getTest();
+    final response = await api.getTest(); // await pour lattente de reponse du api
 
-    setState(() {
+    setState(() 
+    {
       resultat = response;
     });
   }
 
-  Future<void> callApiDB() async {
+  Future<void> callApiDB() async 
+  {
     final Api api = Api();
     final String response = await api.getUser();
 
-    setState(() {
+    setState(() 
+    {
       resultat = response;
     });
   }
 
   @override
-  Widget build(BuildContext context) {
-
-    return Scaffold(
+  Widget build(BuildContext context) 
+  {
+    return Scaffold
+    (
       appBar: AppBar(title: Text('API Testing')),
-      body: Center(
-        child: Text(
+      body: Center
+      (
+        child: Text
+        (
           resultat,
           style: TextStyle(fontSize: 22),
-          textAlign: TextAlign.center,
-        ),
+          textAlign: TextAlign.center
+        )
       ),
 
-      floatingActionButton: Row(
+      floatingActionButton: Row
+      (
         mainAxisSize: MainAxisSize.min,
 
-        children: [
-          FloatingActionButton(
+        children: 
+        [
+          FloatingActionButton
+          (
             heroTag: "btn1",
             onPressed: callApiTest,
-            child: Icon(Icons.send),
+            child: Icon(Icons.send)
           ),
 
           SizedBox(width: 12),
-          FloatingActionButton(
+
+          FloatingActionButton
+          (
             heroTag: "btn2",
             onPressed: callApiDB,
-            child: Icon(Icons.air),
-          ),
-        ],
+            child: Icon(Icons.air)
+          )
+        ]
 
-      ),
+      )
 
     );
 

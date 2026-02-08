@@ -4,7 +4,8 @@ using backend.Models;
 
 namespace backend.Services;
 
-public class UserService(IConfiguration config) { // Injection de dependance (en constructeur) de la configuration a partir du Program.cs (addScoped necessaire car se nest pas un controller)
+public class UserService(IConfiguration config) // Injection de dependance (en constructeur) de la configuration a partir du Program.cs (addScoped necessaire car se nest pas un controller)
+{
     private readonly IConfiguration _config = config; // assignment de la configuration
 
     public async Task<User?> GetUserById(int id) // Methode pour obtenir un utilisateur par son ID
@@ -17,7 +18,7 @@ public class UserService(IConfiguration config) { // Injection de dependance (en
 
             await conn.OpenAsync(); // Force l'ouverture pour détecter les erreurs de connexion
 
-            var sql = "SELECT Id, Prenom FROM users WHERE Id = @id"; // Requete SQL pour obtenir l'utilisateur par ID
+            var sql = "SELECT id AS Id, prenom AS Prenom FROM users WHERE Id = @id"; // Requete SQL pour obtenir l'utilisateur par ID
             var user = await conn.QueryFirstOrDefaultAsync<User>(sql, new { id }); // Execution de la requete avec Dapper
 
             return user;
