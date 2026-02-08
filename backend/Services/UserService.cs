@@ -32,17 +32,13 @@ public class UserService(IConfiguration config) // Injection de dependance (en c
     }
 
     public async Task<string> GetTestMessage()
-{
-    var env = Environment.GetEnvironmentVariables();
-
-    var sb = new System.Text.StringBuilder();
-
-    foreach (System.Collections.DictionaryEntry entry in env)
     {
-        sb.AppendLine($"{entry.Key} = {entry.Value}");
-    }
+        String? conn = Environment.GetEnvironmentVariable("APPSETTING_DefaultConnection");
 
-    return sb.ToString();
-}
+        if (conn == null)
+            return "NUlllll";
+        else
+            return conn;
+    }
 
 }
