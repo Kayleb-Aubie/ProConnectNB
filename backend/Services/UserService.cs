@@ -1,6 +1,7 @@
 using Dapper;
 using Npgsql;
 using backend.Models;
+using Microsoft.VisualBasic;
 
 namespace backend.Services;
 
@@ -32,12 +33,12 @@ public class UserService(IConfiguration config) // Injection de dependance (en c
 
     public async Task<string> GetTestMessage() // Methode de test simple sans de connection a la base de donnees
     {
-        var conn = _config.GetConnectionString("DefaultConnection");
+        var conn = Environment.GetEnvironmentVariables();
 
         if (conn == null)
             return "connection string est null";
         else
-            return conn;
+            return "ok";
     }
 
 }
