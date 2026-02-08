@@ -13,7 +13,7 @@ public class UserService(IConfiguration config) // Injection de dependance (en c
     {
         try
         {
-            var connectionString = _config.GetConnectionString("DefaultConnection"); // Obtention de la chaine de connexion a la base de donnees
+            var connectionString = Environment.GetEnvironmentVariable("DefaultConnection"); // Obtention de la chaine de connexion a la base de donnees
 
             using NpgsqlConnection conn = new NpgsqlConnection(connectionString); // Creation de la connexion a la base de donnees
 
