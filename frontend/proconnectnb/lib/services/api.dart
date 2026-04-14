@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'secrets.dart';
-
+import '../models/medication.dart';
 class Api {
   final String baseUrl =
       "https://proconnectnb-d2bxe6embxg2e7h7.eastus2-01.azurewebsites.net";
@@ -109,6 +109,49 @@ class Api {
       }
     } catch (e) {
       print("Erreur de connexion: $e");
+      return false;
+    }
+  }
+
+  // ===============================
+  // GET MEDICAMENTS
+  // ===============================
+  Future<List<dynamic>> getMedications() async {
+    try {
+      final url = Uri.parse("$baseUrl/api/medicaments");
+
+      final response = await http.get(
+        url,
+        headers: defaultHeaders(),
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception("Erreur chargement médicaments");
+      }
+    } catch (e) {
+      print("Erreur API médicaments: $e");
+      return [];
+    }
+  }
+
+  // ===============================
+  // ADD MEDICAMENT
+  // ===============================
+  Future<bool> addMedication(Map<String, dynamic> data) async {
+    try {
+      final url = Uri.parse("$baseUrl/api/medicaments");
+
+      final response = await http.post(
+        url,
+        headers: defaultHeaders(),
+        body: jsonEncode(data),
+      );
+
+      return response.statusCode == 201 || response.statusCode == 200;
+    } catch (e) {
+      print("Erreur ajout médicament: $e");
       return false;
     }
   }
