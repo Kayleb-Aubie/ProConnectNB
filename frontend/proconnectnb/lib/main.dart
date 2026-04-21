@@ -1,21 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:device_preview_plus/device_preview_plus.dart';
-// Providers
+
 import 'provider/auth_provider.dart';
 import 'provider/medication_provider.dart';
 import 'provider/activity_provider.dart';
-
-// Navigation
+import 'provider/caregiver_provider.dart';
 import 'navigation/app_router.dart';
 
 void main() {
-  runApp(
-    MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => AuthProvider())],
-      child: const MainApp(),
-    ),
-  );
+  runApp(const MainApp());
 }
 
 class MainApp extends StatelessWidget {
@@ -28,11 +21,21 @@ class MainApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => MedicationProvider()),
         ChangeNotifierProvider(create: (_) => ActivityProvider()),
+        ChangeNotifierProvider(create: (_) => CaregiverProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         initialRoute: '/login',
         onGenerateRoute: AppRouter.generateRoute,
+        theme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF0056D2),
+            surface: const Color(0xFFF8FAFC),
+          ),
+          scaffoldBackgroundColor: const Color(0xFFF8FAFC),
+          fontFamily: 'Roboto',
+        ),
       ),
     );
   }

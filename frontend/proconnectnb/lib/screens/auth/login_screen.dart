@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:proconnectnb/services/api.dart';
 import 'package:provider/provider.dart';
 import '../../provider/auth_provider.dart';
 
@@ -16,6 +15,14 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   bool _obscurePassword = true;
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,10 +43,7 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 children: [
                   Image.asset('images/logoProConnectNB.png', height: 250),
-
                   const SizedBox(height: 40),
-
-                  // --- CARTE ---
                   Card(
                     elevation: 15,
                     shape: RoundedRectangleBorder(
@@ -57,13 +61,14 @@ class _LoginPageState extends State<LoginPage> {
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 color: Color(0xFF004E92),
+                                letterSpacing: 1.2,
                               ),
                             ),
                             const SizedBox(height: 30),
-
-                            // EMAIL / USERNAME
                             TextFormField(
                               controller: _emailController,
+                              enabled: !_isLoading,
+                              keyboardType: TextInputType.emailAddress,
                               decoration: InputDecoration(
                                 prefixIcon: const Icon(Icons.alternate_email),
                                 labelText: "Courriel ou Identifiant",
@@ -71,14 +76,17 @@ class _LoginPageState extends State<LoginPage> {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                              validator: (val) =>
-                                  val!.isEmpty ? "Champ requis" : null,
+                              validator: (val) {
+                                if (val == null || val.trim().isEmpty) {
+                                  return "Ce champ est requis";
+                                }
+                                return null;
+                              },
                             ),
                             const SizedBox(height: 20),
-
-                            // PASSWORD
                             TextFormField(
                               controller: _passwordController,
+                              enabled: !_isLoading,
                               obscureText: _obscurePassword,
                               decoration: InputDecoration(
                                 prefixIcon: const Icon(Icons.lock_outline),
@@ -89,34 +97,44 @@ class _LoginPageState extends State<LoginPage> {
                                         ? Icons.visibility
                                         : Icons.visibility_off,
                                   ),
-                                  onPressed: () => setState(
-                                    () => _obscurePassword = !_obscurePassword,
-                                  ),
+                                  onPressed: () {
+                                    if (!_isLoading) {
+                                      setState(
+                                        () => _obscurePassword =
+                                            !_obscurePassword,
+                                      );
+                                    }
+                                  },
                                 ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                              validator: (val) =>
-                                  val!.isEmpty ? "Champ requis" : null,
+                              validator: (val) {
+                                if (val == null || val.isEmpty) {
+                                  return "Ce champ est requis";
+                                }
+                                return null;
+                              },
                             ),
                             const SizedBox(height: 30),
-
-                            // BOUTON LOGIN
                             Container(
                               width: double.infinity,
                               height: 55,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(12),
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    Color(0xFF004E92),
-                                    Color(0xFF000428),
-                                  ],
-                                ),
+                                gradient: _isLoading
+                                    ? null
+                                    : const LinearGradient(
+                                        colors: [
+                                          Color(0xFF004E92),
+                                          Color(0xFF000428),
+                                        ],
+                                      ),
+                                color: _isLoading ? Colors.grey.shade400 : null,
                               ),
                               child: ElevatedButton(
-                                onPressed: _login,
+                                onPressed: _isLoading ? null : _login,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.transparent,
                                   shadowColor: Colors.transparent,
@@ -124,35 +142,51 @@ class _LoginPageState extends State<LoginPage> {
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                 ),
-                                child: const Text(
-                                  "SE CONNECTER",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                child: _isLoading
+                                    ? const SizedBox(
+                                        height: 24,
+                                        width: 24,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 3,
+                                        ),
+                                      )
+                                    : const Text(
+                                        "SE CONNECTER",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          letterSpacing: 1.0,
+                                        ),
+                                      ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            TextButton(
+                              onPressed: _isLoading ? null : () {},
+                              child: Text(
+                                "Mot de passe oublié ?",
+                                style: TextStyle(
+                                  color: _isLoading
+                                      ? Colors.grey
+                                      : const Color(0xFF004E92),
                                 ),
                               ),
                             ),
-
-                            const SizedBox(height: 20),
-
-                            // Forgot password
                             TextButton(
-                              onPressed: () {},
-                              child: const Text("Mot de passe oublié ?"),
-                            ),
-
-                            // Create account
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pushNamed(context, '/addUser');
-                              },
-                              child: const Text(
+                              onPressed: _isLoading
+                                  ? null
+                                  : () {
+                                      Navigator.pushNamed(context, '/addUser');
+                                    },
+                              child: Text(
                                 "Créer un compte",
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF004E92),
+                                  color: _isLoading
+                                      ? Colors.grey
+                                      : const Color(0xFF004E92),
                                 ),
                               ),
                             ),
@@ -170,9 +204,12 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // LOGIQUE LOGIN
-  void _login() async {
+  Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
+
       String email = _emailController.text.trim();
       String password = _passwordController.text.trim();
 
@@ -180,12 +217,32 @@ class _LoginPageState extends State<LoginPage> {
 
       bool success = await auth.login(email, password);
 
+      if (!mounted) return;
+
+      setState(() {
+        _isLoading = false;
+      });
+
       if (success) {
         Navigator.pushReplacementNamed(context, '/welcome');
       } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text("Identifiants invalides")));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Row(
+              children: [
+                Icon(Icons.error_outline, color: Colors.white),
+                SizedBox(width: 12),
+                Text("Identifiants invalides ou erreur de connexion"),
+              ],
+            ),
+            backgroundColor: Colors.redAccent.shade700,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            margin: const EdgeInsets.all(16),
+          ),
+        );
       }
     }
   }

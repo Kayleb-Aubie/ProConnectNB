@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import '/provider/activity_provider.dart';
+import '../../provider/activity_provider.dart';
 
 class ActivityScreen extends StatelessWidget {
   const ActivityScreen({super.key});
@@ -63,7 +63,7 @@ class ActivityScreen extends StatelessWidget {
                             _buildSecondaryStats(provider.todayActivity),
                             const SizedBox(height: 40),
                             _buildWeeklyChart(provider.weeklyHistory),
-                            const SizedBox(height: 40),
+                            const SizedBox(height: 80),
                           ],
                         ),
                       );
@@ -74,6 +74,21 @@ class ActivityScreen extends StatelessWidget {
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => Navigator.pushNamed(context, '/addActivity'),
+        backgroundColor: const Color(0xFF11998E),
+        elevation: 8,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        icon: const Icon(Icons.add_rounded, color: Colors.white),
+        label: const Text(
+          "Saisir un effort",
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.5,
+          ),
+        ),
       ),
     );
   }
@@ -303,7 +318,7 @@ class ActivityScreen extends StatelessWidget {
     final List<String> days = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(32),
@@ -329,51 +344,61 @@ class ActivityScreen extends StatelessWidget {
           const SizedBox(height: 32),
           SizedBox(
             height: 160,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: List.generate(7, (index) {
-                final activity = weeklyHistory[index];
-                final double barHeight = (activity.progressRatio * 130).clamp(
-                  10.0,
-                  130.0,
-                );
-                final bool isToday = index == 6;
+            width: double.infinity,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.bottomCenter,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: List.generate(7, (index) {
+                  final activity = weeklyHistory[index];
+                  final double barHeight = (activity.progressRatio * 130).clamp(
+                    10.0,
+                    130.0,
+                  );
+                  final bool isToday = index == 6;
 
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TweenAnimationBuilder<double>(
-                      tween: Tween<double>(begin: 0.0, end: barHeight),
-                      duration: const Duration(milliseconds: 1000),
-                      curve: Curves.easeOutBack,
-                      builder: (context, height, _) {
-                        return Container(
-                          width: 32,
-                          height: height,
-                          decoration: BoxDecoration(
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TweenAnimationBuilder<double>(
+                          tween: Tween<double>(begin: 0.0, end: barHeight),
+                          duration: const Duration(milliseconds: 1000),
+                          curve: Curves.easeOutBack,
+                          builder: (context, height, _) {
+                            return Container(
+                              width: 24,
+                              height: height,
+                              decoration: BoxDecoration(
+                                color: isToday
+                                    ? const Color(0xFF10B981)
+                                    : const Color(0xFFE2E8F0),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          days[activity.date.weekday - 1],
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: isToday
+                                ? FontWeight.w800
+                                : FontWeight.w600,
                             color: isToday
                                 ? const Color(0xFF10B981)
-                                : const Color(0xFFE2E8F0),
-                            borderRadius: BorderRadius.circular(8),
+                                : const Color(0xFF64748B),
                           ),
-                        );
-                      },
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 12),
-                    Text(
-                      days[activity.date.weekday - 1],
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: isToday ? FontWeight.w800 : FontWeight.w600,
-                        color: isToday
-                            ? const Color(0xFF10B981)
-                            : const Color(0xFF64748B),
-                      ),
-                    ),
-                  ],
-                );
-              }),
+                  );
+                }),
+              ),
             ),
           ),
         ],
