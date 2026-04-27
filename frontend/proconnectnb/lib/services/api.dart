@@ -1,101 +1,65 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'secrets.dart';
+import '../../models/partage_suivi.dart';
 
 class Api {
   final String baseUrl =
       "https://proconnectnb-d2bxe6embxg2e7h7.eastus2-01.azurewebsites.net";
 
-  // ===============================
-  // HEADERS PAR DÉFAUT
-  // ===============================
-  Map<String, String> defaultHeaders() {
+  Map<String, String> headers() {
+    return {"Content-Type": "application/json", "x-api-key": Secrets.apiKey};
+  }
+
+  Map<String, String> authHeaders(String token) {
     return {
       "Content-Type": "application/json",
-      "x-api-key": Secrets.apiKey
+      "x-api-key": Secrets.apiKey,
+      "Authorization": "Bearer $token",
     };
   }
 
-  // ===============================
-  // GET USER (EXISTANT)
-  // ===============================
-  Future<String> getUser() async {
+  Future<Map<String, dynamic>> login(String email, String password) async {
     try {
-      final url = Uri.parse("$baseUrl/api/users/1");
+      await Future.delayed(const Duration(seconds: 1));
 
-      print("URL: $url");
+      final mockUsers = {
+        "test@test.com": {
+          "password": "12345678",
+          "token": "mock_token_123",
+          "firstName": "TestUser",
+          "role": "AINE",
+        },
+        "aidant@test.com": {
+          "password": "12345678",
+          "token": "mock_token_456",
+          "firstName": "AidantUser",
+          "role": "AIDANT",
+        },
+      };
 
-      final response = await http.get(
-        url,
-        headers: defaultHeaders(), // ✅ correction ici
-      );
-
-      print("Status: ${response.statusCode}");
-
-      if (response.statusCode == 200) {
-        return response.body;
-      } else if (response.statusCode == 404) {
-        return "Utilisateur introuvable";
-      } else {
-        return "Erreur: ${response.statusCode}";
+      if (!mockUsers.containsKey(email)) {
+        return {"success": false, "message": "Utilisateur introuvable"};
       }
-    } catch (ex) {
-      return "Exception: $ex";
-    }
-  }
 
-  // ===============================
-  // TEST API (EXISTANT)
-  // ===============================
-  Future<String> getTest() async {
-    final client = HttpClient();
+      final user = mockUsers[email]!;
 
-    try {
-      print(baseUrl);
-
-      final HttpClientRequest request =
-          await client.getUrl(Uri.parse("$baseUrl/api/users/test"));
-
-      final HttpClientResponse response = await request.close();
-
-      if (response.statusCode == 200) {
-        final String body =
-            await response.transform(utf8.decoder).join();
-        return body;
-      } else {
-        return "Erreur: ${response.statusCode}";
+      if (user["password"] != password) {
+        return {"success": false, "message": "Mot de passe incorrect"};
       }
-    } catch (ex) {
-      return "Exception durant l'exécution du api Test: $ex";
-    } finally {
-      client.close();
-    }
-  }
 
-  // ===============================
-  // LOGIN MOCK (TEMPORAIRE)
-  // ===============================
-  Future<bool> loginMock(String email, String password) async {
-    await Future.delayed(const Duration(seconds: 1));
+      return {
+        "success": true,
+        "token": user["token"],
+        "firstName": user["firstName"],
+        "role": user["role"],
+      };
 
-    if (email == "test@test.com" && password == "1234") {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  // ===============================
-  // FUTUR LOGIN (PRÊT POUR BACKEND)
-  // ===============================
-  Future<bool> login(String email, String password) async {
-    try {
-      final url = Uri.parse("$baseUrl/api/auth/login");
-
+      /*
+      // BACKEND PLUS TARD
       final response = await http.post(
-        url,
-        headers: defaultHeaders(),
+        Uri.parse("$baseUrl/api/auth/login"),
+        headers: headers(),
         body: jsonEncode({
           "email": email,
           "password": password,
@@ -103,13 +67,149 @@ class Api {
       );
 
       if (response.statusCode == 200) {
-        return true;
-      } else {
-        return false;
+        final data = jsonDecode(response.body);
+        return {
+          "success": true,
+          "token": data["token"],
+          "firstName": data["firstName"],
+          "role": data["role"],
+        };
       }
+
+      if (response.statusCode == 401) {
+        return {
+          "success": false,
+          "message": "Email ou mot de passe incorrect",
+        };
+      }
+
+      if (response.statusCode == 404) {
+        return {
+          "success": false,
+          "message": "Utilisateur introuvable",
+        };
+      }
+
+      if (response.statusCode == 403) {
+        return {
+          "success": false,
+          "message": "Accès refusé",
+        };
+      }
+
+      return {
+        "success": false,
+        "message": "Erreur serveur: ${response.statusCode}",
+      };
+      */
     } catch (e) {
-      print("Erreur de connexion: $e");
+      return {"success": false, "message": "Erreur de connexion au serveur"};
+    }
+  }
+
+  Future<Map<String, dynamic>> register(Map<String, dynamic> data) async {
+    try {
+      await Future.delayed(const Duration(seconds: 1));
+
+      return {
+        "success": true,
+        "email": data["email"],
+        "firstName": data["prenom"],
+        "role": data["role"],
+      };
+
+      /*
+      final response = await http.post(
+        Uri.parse("$baseUrl/api/auth/register"),
+        headers: headers(),
+        body: jsonEncode(data),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return {
+          "success": true,
+          ...jsonDecode(response.body),
+        };
+      }
+
+      if (response.statusCode == 409) {
+        return {
+          "success": false,
+          "message": "Un compte existe déjà avec cet email",
+        };
+      }
+
+      if (response.statusCode == 400) {
+        return {
+          "success": false,
+          "message": "Informations invalides",
+        };
+      }
+
+      return {
+        "success": false,
+        "message": "Erreur serveur: ${response.statusCode}",
+      };
+      */
+    } catch (e) {
+      return {"success": false, "message": "Erreur de connexion au serveur"};
+    }
+  }
+
+  Future<bool> registerCaregiver({
+    required String nom,
+    required String prenom,
+    required String telephone,
+    required String email,
+    required String relation,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse("$baseUrl/api/ProcheAidant"),
+        headers: headers(),
+        body: jsonEncode({
+          "nom": nom,
+          "prenom": prenom,
+          "telephone": telephone,
+          "email": email,
+          "relation": relation,
+        }),
+      );
+
+      return response.statusCode == 200 || response.statusCode == 201;
+    } catch (e) {
       return false;
+    }
+  }
+
+  Future<bool> upsertPartage(PartageSuivi partage, String token) async {
+    try {
+      final response = await http.post(
+        Uri.parse("$baseUrl/api/PartageSuivi"),
+        headers: authHeaders(token),
+        body: jsonEncode(partage.toJson()),
+      );
+
+      return response.statusCode == 200 || response.statusCode == 201;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<Map<String, dynamic>?> getUser(int id) async {
+    try {
+      final response = await http.get(
+        Uri.parse("$baseUrl/api/users/$id"),
+        headers: headers(),
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+
+      return null;
+    } catch (e) {
+      return null;
     }
   }
 }
