@@ -1,74 +1,103 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using backend.Dtos.Auth;
 using backend.Infrastructure;
-using Microsoft.IdentityModel.Tokens;
+using backend.Services.Interfaces;
+using System.Security.Claims;
 
 namespace backend.Endpoints;
 
-// Classe pour gerer les endpoints d'authentification (ex: génération de JWT pour dev)
 public static class AuthEndpoints
 {
-    public static void MapAuthEndpoints(this WebApplication app) // Methode d'extension pour ajouter les endpoints à l'application
+    public static void MapAuthEndpoints(this WebApplication app)
     {
-        app.MapPost("/api/auth/token", Token)
-            .WithTags("Auth")
+        var route = app.MapGroup("/api/auth").WithTags("Auth");
+
+        route.MapPost("/register", Register)
+            .AllowAnonymous()
+            .Produces<TokenResponseDto>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status400BadRequest)
+            .WithSummary("Créer un compte (register)");
+
+        route.MapPost("/login", Login)
             .AllowAnonymous()
             .Produces<TokenResponseDto>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status401Unauthorized)
-            .ProducesProblem(StatusCodes.Status500InternalServerError)
-            .WithOpenApi(o =>
-            {
-                o.Summary = "Génère un JWT (dev)";
-                o.Description = "Valide DEV_AUTH_SECRET puis retourne un JWT contenant Email + Role.";
-                return o;
-            });
+            .WithSummary("Se connecter (login)");
+
+        route.MapPost("/forgot-password", ForgotPassword)
+            .AllowAnonymous()
+            .Produces(StatusCodes.Status204NoContent)
+            .WithSummary("Demande de reset password (envoie email)");
+
+        route.MapPost("/reset-password", ResetPassword)
+            .AllowAnonymous()
+            .Produces(StatusCodes.Status204NoContent)
+            .Produces(StatusCodes.Status400BadRequest)
+            .WithSummary("Reset password avec token");
+
+        route.MapGet("/me", Me)
+            .RequireAuthorization()
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status401Unauthorized)
+            .WithSummary("Retourne l'utilisateur courant (JWT)");
     }
 
-    private static IResult Token(TokenRequestDto dto) // Endpoint pour générer un JWT (dev)
+    private static async Task<IResult> Register(RegisterRequestDto dto, IAuthService auth)
     {
         var validation = DtoValidation.Validate(dto);
         if (validation != null) return validation;
 
-        var devSecret = Environment.GetEnvironmentVariable("DEV_AUTH_SECRET");
-        if (string.IsNullOrWhiteSpace(devSecret) || dto.Secret != devSecret)
+        try
         {
-            return Results.Unauthorized();
+            var token = await auth.Register(dto);
+            return Results.Ok(token);
         }
-
-        var keyStr = Environment.GetEnvironmentVariable("JWT__Key");
-        if (string.IsNullOrWhiteSpace(keyStr))
+        catch (InvalidOperationException ex)
         {
-            return Results.Problem("Missing env var: JWT__Key", statusCode: 500);
+            return Results.BadRequest(new { error = ex.Message });
         }
+    }
 
-        var issuer = Environment.GetEnvironmentVariable("JWT__Issuer") ?? "ProConnectNB";
-        var audience = Environment.GetEnvironmentVariable("JWT__Audience") ?? "ProConnectNB";
-        var expiresMinutes = long.TryParse(Environment.GetEnvironmentVariable("JWT__ExpiresMinutes"), out var mins) ? mins : 120;
+    private static async Task<IResult> Login(LoginRequestDto dto, IAuthService auth)
+    {
+        var validation = DtoValidation.Validate(dto);
+        if (validation != null) return validation;
 
-        var claims = new List<Claim>
+        var token = await auth.Login(dto);
+        return token == null ? Results.Unauthorized() : Results.Ok(token);
+    }
+
+    private static async Task<IResult> ForgotPassword(ForgotPasswordRequestDto dto, IAuthService auth)
+    {
+        var validation = DtoValidation.Validate(dto);
+        if (validation != null) return validation;
+
+        await auth.RequestPasswordReset(dto);
+        return Results.NoContent();
+    }
+
+    private static async Task<IResult> ResetPassword(ResetPasswordRequestDto dto, IAuthService auth)
+    {
+        var validation = DtoValidation.Validate(dto);
+        if (validation != null) return validation;
+
+        var ok = await auth.ResetPassword(dto);
+        return ok ? Results.NoContent() : Results.BadRequest(new { error = "Invalid or expired token" });
+    }
+
+    private static IResult Me(ClaimsPrincipal principal)
+    {
+        var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+        var email = principal.FindFirstValue(ClaimTypes.Email);
+        var roles = principal.FindAll(ClaimTypes.Role).Select(r => r.Value).ToArray();
+
+        if (string.IsNullOrWhiteSpace(userId)) return Results.Unauthorized();
+
+        return Results.Ok(new
         {
-            new(ClaimTypes.Email, dto.Email),
-            new(ClaimTypes.Role, dto.Role)
-        };
-
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyStr));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        var token = new JwtSecurityToken(
-            issuer: issuer,
-            audience: audience,
-            claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(expiresMinutes),
-            signingCredentials: creds
-        );
-
-        var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
-        return Results.Ok(new TokenResponseDto
-        {
-            AccessToken = accessToken,
-            TokenType = "Bearer",
-            ExpiresInSeconds = expiresMinutes * 60
+            userId,
+            email,
+            roles
         });
     }
 }
+

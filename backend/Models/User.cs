@@ -1,12 +1,18 @@
 namespace backend.Models;
 
-// Modèle de données pour représenter un utilisateur (Aîné, Proche Aidant, Admin)
-public class User
+public abstract class User
 {
-    public long Id { get; set; } // Clé primaire
-    public required string Nom { get; set; } // Nom de famille
-    public required string Prenom { get; set; } // Prénom
-    public required string Telephone { get; set; } // Numéro de téléphone
-    public required string Email { get; set; } // Adresse e-mail
-    public string? Role { get; set; } // ex: "Aine", "ProcheAidant", "Admin"
+    public long Id { get; set; }
+    // Keycloak (ancien) — gardé en commentaire pour référence
+    // public string? KeycloakId { get; set; } // claim "sub"
+
+    public required string Nom { get; set; }
+    public required string Prenom { get; set; }
+    public required string Telephone { get; set; }
+    public required string Email { get; set; }
+
+    // Auth locale
+    public required string PasswordHash { get; set; }
+    public DateTime? PasswordResetTokenExpiresAtUtc { get; set; }
+    public string? PasswordResetTokenHash { get; set; }
 }

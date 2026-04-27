@@ -54,6 +54,7 @@ public class ProcheAidantService(AppDbContext db) : IProcheAidantService
             Prenom = dto.Prenom,
             Telephone = dto.Telephone,
             Email = dto.Email,
+            PasswordHash = "N/A",
             Relation = dto.Relation
         };
         _db.ProchesAidants.Add(entity);

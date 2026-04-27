@@ -60,6 +60,7 @@ public class AineService(AppDbContext db) : IAineService
             Prenom = dto.Prenom,
             Telephone = dto.Telephone,
             Email = dto.Email,
+            PasswordHash = "N/A",
             DateNaissance = dto.DateNaissance,
             Adresse = dto.Adresse,
             Docteur = dto.Docteur,

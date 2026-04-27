@@ -23,8 +23,7 @@ public class UserService(AppDbContext db) : IUserService
                 Nom = u.Nom,
                 Prenom = u.Prenom,
                 Telephone = u.Telephone,
-                Email = u.Email,
-                Role = u.Role
+                Email = u.Email
             })
             .ToListAsync();
     }
@@ -40,21 +39,20 @@ public class UserService(AppDbContext db) : IUserService
                 Nom = u.Nom,
                 Prenom = u.Prenom,
                 Telephone = u.Telephone,
-                Email = u.Email,
-                Role = u.Role
+                Email = u.Email
             })
             .FirstOrDefaultAsync();
     }
 
-    public async Task<IdResponseDto> Create(UpsertUserRequestDto dto) // Crée un nouvel utilisateur
+    public async Task<IdResponseDto> Create(UpsertUserRequestDto dto)
     {
-        var entity = new User
+        var entity = new StandardUser
         {
             Nom = dto.Nom,
             Prenom = dto.Prenom,
             Telephone = dto.Telephone,
             Email = dto.Email,
-            Role = dto.Role
+            PasswordHash = "N/A"
         };
         _db.Users.Add(entity);
         await _db.SaveChangesAsync();
@@ -70,7 +68,6 @@ public class UserService(AppDbContext db) : IUserService
         entity.Prenom = dto.Prenom;
         entity.Telephone = dto.Telephone;
         entity.Email = dto.Email;
-        entity.Role = dto.Role;
 
         await _db.SaveChangesAsync();
         return true;

@@ -7,6 +7,5 @@ public class UserResponseDto
     public required string Prenom { get; set; }
     public required string Telephone { get; set; }
     public required string Email { get; set; }
-    public string? Role { get; set; }
 }
 

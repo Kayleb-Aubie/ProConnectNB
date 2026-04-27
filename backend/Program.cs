@@ -1,7 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using backend.Dtos.Auth;
 using backend.Endpoints;
 using backend.Infrastructure;
 using backend.Services;
@@ -44,6 +43,8 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IAineService, AineService>();
 builder.Services.AddScoped<IProcheAidantService, ProcheAidantService>();
 builder.Services.AddScoped<IMedicamentService, MedicamentService>();
@@ -61,10 +62,30 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     }
 });
 
+// Keycloak (ancien) — gardé en commentaire pour référence
+// var keycloakAuthority = Environment.GetEnvironmentVariable("KEYCLOAK__AUTHORITY");
+// var keycloakAudience = Environment.GetEnvironmentVariable("KEYCLOAK__AUDIENCE");
+// builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+//     .AddJwtBearer(options =>
+//     {
+//         options.Authority = keycloakAuthority;
+//         options.Audience = keycloakAudience;
+//         options.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
+//         options.TokenValidationParameters = new TokenValidationParameters
+//         {
+//             ValidateIssuer = true,
+//             ValidateAudience = true,
+//             ValidateLifetime = true,
+//             ValidateIssuerSigningKey = true,
+//             NameClaimType = "preferred_username"
+//         };
+//     });
+
+// Auth locale (JWT signé)
 var jwtKey = Environment.GetEnvironmentVariable("JWT__Key");
 if (string.IsNullOrWhiteSpace(jwtKey))
 {
-    throw new InvalidOperationException("Missing env var: JWT__Key (required for protected endpoints).");
+    throw new InvalidOperationException("Missing env var: JWT__Key");
 }
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

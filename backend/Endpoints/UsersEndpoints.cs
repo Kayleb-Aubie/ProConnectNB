@@ -13,6 +13,7 @@ public static class UsersEndpoints
 
         // read: protected
         route.RequireAuthorization();
+
         route.MapGet("/", GetAll)
             .Produces<IReadOnlyList<UserResponseDto>>(StatusCodes.Status200OK)
             .WithSummary("Récupère tous les utilisateurs");
@@ -21,11 +22,11 @@ public static class UsersEndpoints
             .Produces(StatusCodes.Status404NotFound)
             .WithSummary("Récupère un utilisateur par id");
 
-        // create account: public
+        // create: admin only
         route.MapPost("/", Create)
-            .AllowAnonymous()
+            .RequireAuthorization("AdminOnly")
             .Produces(StatusCodes.Status201Created)
-            .WithSummary("Crée un utilisateur (public)");
+            .WithSummary("Crée un utilisateur local (Admin)");
 
         // write: admin
         route.MapPut("/{id:long}", Update)
@@ -47,7 +48,7 @@ public static class UsersEndpoints
         return Results.Ok(users);
     }
 
-    private static async Task<IResult> GetById(long id, IUserService svc) // Endpoint pour récupérer un utilisateur par id
+    private static async Task<IResult> GetById(long id, IUserService svc)
     {
         var u = await svc.GetById(id);
         return u == null ? Results.NotFound() : Results.Ok(u);
