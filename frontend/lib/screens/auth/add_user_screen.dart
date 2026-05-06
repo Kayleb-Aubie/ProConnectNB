@@ -5,6 +5,28 @@ import 'package:provider/provider.dart';
 import '../../provider/auth_provider.dart';
 import '../../widgets/tr_text.dart';
 
+class _PhoneInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final digits = newValue.text.replaceAll(RegExp(r'\D'), '');
+    if (digits.length > 10) return oldValue;
+
+    final buf = StringBuffer();
+    for (int i = 0; i < digits.length; i++) {
+      if (i == 3 || i == 6) buf.write('-');
+      buf.write(digits[i]);
+    }
+    final text = buf.toString();
+    return TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
+    );
+  }
+}
+
 class CreateAdminPage extends StatefulWidget {
   const CreateAdminPage({super.key});
 
@@ -418,6 +440,14 @@ class _CreateAdminPageState extends State<CreateAdminPage> {
           "Téléphone",
           Icons.phone_rounded,
           type: TextInputType.phone,
+          inputFormatters: [_PhoneInputFormatter()],
+          hintText: '506-XXX-XXXX',
+          validator: (v) {
+            if (v == null || v.trim().isEmpty) return 'Champ requis';
+            final digits = v.replaceAll(RegExp(r'\D'), '');
+            if (digits.length != 10) return 'Numéro invalide (10 chiffres)';
+            return null;
+          },
         ),
         const SizedBox(height: 14),
         _buildField(
@@ -671,11 +701,15 @@ class _CreateAdminPageState extends State<CreateAdminPage> {
     IconData icon, {
     TextInputType type = TextInputType.text,
     TextCapitalization cap = TextCapitalization.none,
+    List<TextInputFormatter>? inputFormatters,
+    String? hintText,
+    String? Function(String?)? validator,
   }) {
     return TextFormField(
       controller: controller,
       keyboardType: type,
       textCapitalization: cap,
+      inputFormatters: inputFormatters,
       style: const TextStyle(
         color: Colors.white,
         fontWeight: FontWeight.w600,
@@ -683,6 +717,11 @@ class _CreateAdminPageState extends State<CreateAdminPage> {
       ),
       decoration: InputDecoration(
         labelText: label,
+        hintText: hintText,
+        hintStyle: TextStyle(
+          color: Colors.white.withValues(alpha: 0.25),
+          fontSize: 13,
+        ),
         labelStyle: TextStyle(
           color: Colors.white.withValues(alpha: 0.4),
           fontSize: 13,
@@ -722,7 +761,7 @@ class _CreateAdminPageState extends State<CreateAdminPage> {
         ),
         errorStyle: const TextStyle(color: Color(0xFFFF7070), fontSize: 11),
       ),
-      validator: (v) => v == null || v.trim().isEmpty ? "Champ requis" : null,
+      validator: validator ?? (v) => v == null || v.trim().isEmpty ? "Champ requis" : null,
     );
   }
 

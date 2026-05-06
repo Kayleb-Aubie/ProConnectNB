@@ -29,4 +29,7 @@ public class RegisterRequestDto
     [MinLength(8, ErrorMessage = "Le mot de passe doit contenir au moins 8 caractères.")] // Validation pour s'assurer que le mot de passe contient au moins 8 caractères
     [MaxLength(200, ErrorMessage = "Le mot de passe ne doit pas dépasser 200 caractères.")] // Validation pour s'assurer que le mot de passe ne dépasse pas 200 caractères
     public required string Password { get; set; } // Mot de passe obligatoire pour user, entre 8 et 200 caractères
+
+    // "AINE" crée un Aine, "AIDANT" crée un ProcheAidant, null/autre → StandardUser
+    public string? Role { get; set; }
 }

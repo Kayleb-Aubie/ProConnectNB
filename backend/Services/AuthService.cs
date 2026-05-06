@@ -23,13 +23,33 @@ public class AuthService(AppDbContext db, IEmailService email) : IAuthService
         var exists = await _db.Users.AnyAsync(u => u.Email.ToLower() == dto.Email.ToLower());
         if (exists) throw new InvalidOperationException("Email already exists.");
 
-        var user = new StandardUser
+        User user = dto.Role?.ToUpperInvariant() switch
         {
-            Nom = dto.Nom,
-            Prenom = dto.Prenom,
-            Telephone = dto.Telephone,
-            Email = dto.Email,
-            PasswordHash = "temp" // overwritten below
+            "AINE" => new Aine
+            {
+                Nom = dto.Nom,
+                Prenom = dto.Prenom,
+                Telephone = dto.Telephone,
+                Email = dto.Email,
+                PasswordHash = "temp",
+                DateNaissance = new DateOnly(1900, 1, 1),
+            },
+            "AIDANT" => new ProcheAidant
+            {
+                Nom = dto.Nom,
+                Prenom = dto.Prenom,
+                Telephone = dto.Telephone,
+                Email = dto.Email,
+                PasswordHash = "temp",
+            },
+            _ => new StandardUser
+            {
+                Nom = dto.Nom,
+                Prenom = dto.Prenom,
+                Telephone = dto.Telephone,
+                Email = dto.Email,
+                PasswordHash = "temp",
+            },
         };
         user.PasswordHash = _hasher.HashPassword(user, dto.Password);
 

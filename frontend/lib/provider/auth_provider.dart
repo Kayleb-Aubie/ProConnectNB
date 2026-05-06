@@ -182,6 +182,7 @@ class AuthProvider with ChangeNotifier {
         telephone: phone.trim(),
         email: email.trim().toLowerCase(),
         password: password,
+        role: role,
       );
 
       if (result["success"] != true) {
