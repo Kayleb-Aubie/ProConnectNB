@@ -33,9 +33,9 @@ public static class MedicamentsEndpoints
             .WithSummary("Marque le médicament comme supprimé (is_deleted = true), soft delete");
     }
 
-    private static async Task<IResult> GetAll(IMedicamentService svc)
+    private static async Task<IResult> GetAll(IMedicamentService svc, long? aineId = null)
     {
-        var items = await svc.GetAll();
+        var items = await svc.GetAll(aineId);
         return Results.Ok(items);
     }
 
