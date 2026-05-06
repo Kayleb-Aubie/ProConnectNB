@@ -26,7 +26,41 @@ public class AineService(AppDbContext db) : IAineService
                 Telephone = a.Telephone,
                 Email = a.Email,
                 DateNaissance = a.DateNaissance,
-                Adresse = new AdresseDto
+                Adresse = a.Adresse == null ? null : new AdresseDto
+                {
+                    Numero = a.Adresse.Numero,
+                    Rue = a.Adresse.Rue,
+                    Ville = a.Adresse.Ville,
+                    CodePostal = a.Adresse.CodePostal,
+                    Province = a.Adresse.Province
+                },
+                Docteur = a.Docteur,
+                NumeroTelephoneDocteur = a.NumeroTelephoneDocteur
+            })
+            .ToListAsync();
+    }
+
+    public async Task<IReadOnlyList<AineResponseDto>> GetMine(long procheAidantId)
+    {
+        var aineIds = await _db.PartagesSuivi
+            .AsNoTracking()
+            .Where(p => p.ProcheAidantId == procheAidantId)
+            .Select(p => p.AineId)
+            .ToListAsync();
+
+        return await _db.Aines
+            .AsNoTracking()
+            .Where(a => aineIds.Contains(a.Id))
+            .OrderBy(a => a.Id)
+            .Select(a => new AineResponseDto
+            {
+                Id = a.Id,
+                Nom = a.Nom,
+                Prenom = a.Prenom,
+                Telephone = a.Telephone,
+                Email = a.Email,
+                DateNaissance = a.DateNaissance,
+                Adresse = a.Adresse == null ? null : new AdresseDto
                 {
                     Numero = a.Adresse.Numero,
                     Rue = a.Adresse.Rue,
@@ -53,7 +87,7 @@ public class AineService(AppDbContext db) : IAineService
                 Telephone = a.Telephone,
                 Email = a.Email,
                 DateNaissance = a.DateNaissance,
-                Adresse = new AdresseDto
+                Adresse = a.Adresse == null ? null : new AdresseDto
                 {
                     Numero = a.Adresse.Numero,
                     Rue = a.Adresse.Rue,

@@ -80,6 +80,10 @@ public static class SeedData
 
         if (aines.Count > 0 && !await db.RendezVousMedicaux.AnyAsync(ct))
         {
+            var marie = aines.FirstOrDefault(a => a.Email == "marie.dupont@proconnect.local");
+            var jean = aines.FirstOrDefault(a => a.Email == "jean.tremblay@proconnect.local");
+            var fallback = aines[0];
+
             db.RendezVousMedicaux.AddRange(
                 new RendezVousMedical
                 {
@@ -87,7 +91,7 @@ public static class SeedData
                     Lieu = new Adresse { Numero = "135", Rue = "MacBeath Ave", Ville = "Moncton", Province = "NB", CodePostal = "E1C 6Z8" },
                     Docteur = "Dr. Beauchamp (Cardiologue)",
                     Notes = "Suivi cardiologique annuel — apporter les résultats de prise de sang",
-                    AineId = aines[0].Id
+                    AineId = (marie ?? fallback).Id
                 },
                 new RendezVousMedical
                 {
@@ -95,7 +99,7 @@ public static class SeedData
                     Lieu = new Adresse { Numero = "330", Rue = "Rue Université", Ville = "Moncton", Province = "NB", CodePostal = "E1C 2Z6" },
                     Docteur = "Dr. Rousseau (Médecin de famille)",
                     Notes = "Renouvellement ordonnance et bilan de santé général",
-                    AineId = aines.Count > 1 ? aines[1].Id : aines[0].Id
+                    AineId = (jean ?? marie ?? fallback).Id
                 }
             );
         }

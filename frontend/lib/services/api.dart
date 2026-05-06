@@ -63,28 +63,37 @@ class Api {
     }
   }
 
-  // Fabrice | 2026-05-05T04:47:29Z | Enchaîne /api/auth/me, /api/aines et /api/proches-aidants pour le rôle UI.
+  // Lit le rôle et le prénom depuis les claims JWT via /api/auth/me.
+  // Fallback sur la recherche par email si le JWT ne contient pas encore les claims (anciens comptes).
   Future<Map<String, dynamic>> _fetchLoginProfile(
     String token,
     String emailLower,
   ) async {
-    int? userId;
-    String? meEmail;
-
     final meResp = await http.get(
       Uri.parse("$baseUrl/api/auth/me"),
       headers: authHeaders(token),
     );
-    if (meResp.statusCode == 200) {
-      final me = jsonDecode(meResp.body) as Map<String, dynamic>;
-      userId = _parseId(me["userId"]);
-      meEmail = me["email"]?.toString().toLowerCase();
+
+    if (meResp.statusCode != 200) {
+      return {"userId": null, "firstName": emailLower.split("@").first, "role": "AIDANT"};
     }
 
-    final matchEmail = (meEmail != null && meEmail.isNotEmpty)
-        ? meEmail
-        : emailLower;
+    final me = jsonDecode(meResp.body) as Map<String, dynamic>;
+    final userId = _parseId(me["userId"]);
+    final prenom = me["prenom"]?.toString();
+    final roles = (me["roles"] as List? ?? []).map((r) => r.toString()).toList();
+    final matchEmail = me["email"]?.toString().toLowerCase() ?? emailLower;
+    final firstName = (prenom != null && prenom.isNotEmpty) ? prenom : matchEmail.split("@").first;
 
+    // Chemin rapide : le JWT contient déjà le rôle (nouveaux comptes)
+    if (roles.contains("AINE")) {
+      return {"userId": userId, "firstName": firstName, "role": "AINE"};
+    }
+    if (roles.contains("AIDANT")) {
+      return {"userId": userId, "firstName": firstName, "role": "AIDANT"};
+    }
+
+    // Fallback pour anciens comptes sans claim de rôle : cherche par email dans les listes
     final ainesResp = await http.get(
       Uri.parse("$baseUrl/api/aines"),
       headers: authHeaders(token),
@@ -96,7 +105,7 @@ class Api {
         if (m["email"]?.toString().toLowerCase() == matchEmail) {
           return {
             "userId": userId ?? _parseId(m["id"]),
-            "firstName": m["prenom"] ?? matchEmail.split("@").first,
+            "firstName": m["prenom"]?.toString() ?? firstName,
             "role": "AINE",
           };
         }
@@ -114,33 +123,14 @@ class Api {
         if (m["email"]?.toString().toLowerCase() == matchEmail) {
           return {
             "userId": userId ?? _parseId(m["id"]),
-            "firstName": m["prenom"] ?? matchEmail.split("@").first,
+            "firstName": m["prenom"]?.toString() ?? firstName,
             "role": "AIDANT",
           };
         }
       }
     }
 
-    if (userId != null) {
-      final uResp = await http.get(
-        Uri.parse("$baseUrl/api/users/$userId"),
-        headers: authHeaders(token),
-      );
-      if (uResp.statusCode == 200) {
-        final u = jsonDecode(uResp.body) as Map<String, dynamic>;
-        return {
-          "userId": userId,
-          "firstName": u["prenom"] ?? matchEmail.split("@").first,
-          "role": "AIDANT",
-        };
-      }
-    }
-
-    return {
-      "userId": userId,
-      "firstName": matchEmail.split("@").first,
-      "role": "AIDANT",
-    };
+    return {"userId": userId, "firstName": firstName, "role": "AIDANT"};
   }
 
   int? _parseId(dynamic value) {

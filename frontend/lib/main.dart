@@ -21,7 +21,6 @@ Future<void> main() async {
   await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationService.init();
-  debugPrint("TOKEN CHARGÉ = ${dotenv.env['PREDICT_HQ_TOKEN']}");
   final settingsProvider = SettingsProvider();
   await settingsProvider.loadSettings();
 

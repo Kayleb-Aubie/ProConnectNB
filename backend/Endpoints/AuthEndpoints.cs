@@ -88,16 +88,12 @@ public static class AuthEndpoints
     {
         var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
         var email = principal.FindFirstValue(ClaimTypes.Email);
+        var prenom = principal.FindFirstValue(ClaimTypes.GivenName);
         var roles = principal.FindAll(ClaimTypes.Role).Select(r => r.Value).ToArray();
 
         if (string.IsNullOrWhiteSpace(userId)) return Results.Unauthorized();
 
-        return Results.Ok(new
-        {
-            userId,
-            email,
-            roles
-        });
+        return Results.Ok(new { userId, email, prenom, roles });
     }
 }
 

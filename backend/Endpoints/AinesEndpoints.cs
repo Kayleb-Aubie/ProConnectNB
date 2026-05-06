@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using backend.Dtos.Aines;
 using backend.Infrastructure;
 using backend.Services.Interfaces;
@@ -13,6 +14,10 @@ public static class AinesEndpoints
         route.MapGet("/", GetAll)
             .Produces<IReadOnlyList<AineResponseDto>>(StatusCodes.Status200OK)
             .WithSummary("Récupère tous les aînés");
+
+        route.MapGet("/mine", GetMine)
+            .Produces<IReadOnlyList<AineResponseDto>>(StatusCodes.Status200OK)
+            .WithSummary("Récupère les aînés liés au proche aidant connecté via PartageSuivi");
         route.MapGet("/{id:long}", GetById)
             .Produces<AineResponseDto>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
@@ -39,6 +44,14 @@ public static class AinesEndpoints
     private static async Task<IResult> GetAll(IAineService svc)
     {
         var items = await svc.GetAll();
+        return Results.Ok(items);
+    }
+
+    private static async Task<IResult> GetMine(ClaimsPrincipal principal, IAineService svc)
+    {
+        var userIdStr = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!long.TryParse(userIdStr, out var userId)) return Results.Unauthorized();
+        var items = await svc.GetMine(userId);
         return Results.Ok(items);
     }
 

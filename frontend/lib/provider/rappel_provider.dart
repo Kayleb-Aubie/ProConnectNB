@@ -44,7 +44,9 @@ class RappelProvider with ChangeNotifier {
         ..addAll(list);
       _sort();
       notifyListeners();
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('fetchRappels error: $e');
+    }
   }
 
   Future<bool> addRappel(Rappel rappel, AuthProvider auth) async {

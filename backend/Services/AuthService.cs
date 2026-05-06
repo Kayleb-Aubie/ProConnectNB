@@ -56,7 +56,8 @@ public class AuthService(AppDbContext db, IEmailService email) : IAuthService
         _db.Users.Add(user);
         await _db.SaveChangesAsync();
 
-        return IssueJwt(user.Id, user.Email, roles: Array.Empty<string>());
+        var role = user switch { Aine => "AINE", ProcheAidant => "AIDANT", _ => "USER" };
+        return IssueJwt(user.Id, user.Email, user.Prenom, new[] { role });
     }
 
     public async Task<TokenResponseDto?> Login(LoginRequestDto dto)
@@ -67,7 +68,8 @@ public class AuthService(AppDbContext db, IEmailService email) : IAuthService
         var ok = _hasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
         if (ok == PasswordVerificationResult.Failed) return null;
 
-        return IssueJwt(user.Id, user.Email, roles: Array.Empty<string>());
+        var role = user switch { Aine => "AINE", ProcheAidant => "AIDANT", _ => "USER" };
+        return IssueJwt(user.Id, user.Email, user.Prenom, new[] { role });
     }
 
     public async Task RequestPasswordReset(ForgotPasswordRequestDto dto)
@@ -115,7 +117,7 @@ public class AuthService(AppDbContext db, IEmailService email) : IAuthService
         return Convert.ToHexString(bytes);
     }
 
-    private static TokenResponseDto IssueJwt(long userId, string email, string[] roles)
+    private static TokenResponseDto IssueJwt(long userId, string email, string prenom, string[] roles)
     {
         var jwtKey = Environment.GetEnvironmentVariable("JWT__Key")
                      ?? throw new InvalidOperationException("Missing env var: JWT__Key");
@@ -126,7 +128,8 @@ public class AuthService(AppDbContext db, IEmailService email) : IAuthService
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, userId.ToString()),
-            new(ClaimTypes.Email, email)
+            new(ClaimTypes.Email, email),
+            new(ClaimTypes.GivenName, prenom),
         };
         foreach (var r in roles)
         {
