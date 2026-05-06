@@ -12,11 +12,11 @@ public class MedicamentService(AppDbContext db) : IMedicamentService
 {
     private readonly AppDbContext _db = db;
 
-    public async Task<IReadOnlyList<MedicamentResponseDto>> GetAll()
+    public async Task<IReadOnlyList<MedicamentResponseDto>> GetAll(long? aineId = null)
     {
         return await _db.Medicaments
             .AsNoTracking()
-            .Where(m => !m.IsDeleted)
+            .Where(m => !m.IsDeleted && (aineId == null || m.AineId == aineId))
             .OrderBy(m => m.Id)
             .Select(m => new MedicamentResponseDto
             {

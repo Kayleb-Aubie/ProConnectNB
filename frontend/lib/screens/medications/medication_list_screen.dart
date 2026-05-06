@@ -371,10 +371,13 @@ class _MedicationListScreenState extends State<MedicationListScreen> {
             )
           : FloatingActionButton.extended(
               onPressed: () {
+                final auth = context.read<AuthProvider>();
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => const AddMedicationScreen(),
+                    builder: (_) => AddMedicationScreen(
+                      initialAineId: auth.currentUserLocalId ?? 1,
+                    ),
                   ),
                 );
               },

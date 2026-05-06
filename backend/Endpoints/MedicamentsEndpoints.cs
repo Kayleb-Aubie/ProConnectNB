@@ -19,9 +19,8 @@ public static class MedicamentsEndpoints
             .WithSummary("Récupère un médicament par id");
 
         route.MapPost("/", Create)
-            .RequireAuthorization("AdminOnly")
             .Produces(StatusCodes.Status201Created)
-            .WithSummary("Crée un médicament (Admin)");
+            .WithSummary("Crée un médicament");
 
         route.MapPut("/{id:long}", Update)
             .Produces(StatusCodes.Status204NoContent)
@@ -34,9 +33,9 @@ public static class MedicamentsEndpoints
             .WithSummary("Marque le médicament comme supprimé (is_deleted = true), soft delete");
     }
 
-    private static async Task<IResult> GetAll(IMedicamentService svc)
+    private static async Task<IResult> GetAll(IMedicamentService svc, long? aineId = null)
     {
-        var items = await svc.GetAll();
+        var items = await svc.GetAll(aineId);
         return Results.Ok(items);
     }
 

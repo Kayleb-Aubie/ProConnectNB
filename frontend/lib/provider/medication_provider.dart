@@ -44,7 +44,6 @@ class MedicationProvider with ChangeNotifier {
     return takenCount / validMeds.length;
   }
 
-  // Fabrice | 2026-05-05T04:56:37Z | Rafraîchit depuis GET /api/medicaments.
   Future<void> fetchMedications(AuthProvider auth) async {
     if (auth.token == null) return;
 
@@ -52,7 +51,8 @@ class MedicationProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final list = await _service.getMedicaments(auth.token!);
+      final aineId = auth.isAine ? auth.currentUserLocalId : null;
+      final list = await _service.getMedicaments(auth.token!, aineId: aineId);
       _medications
         ..clear()
         ..addAll(list);

@@ -11,12 +11,11 @@ import 'api.dart';
 class MedicationService {
   final Api _api = Api();
 
-  // Fabrice | 2026-05-05T04:56:37Z | GET /api/medicaments (liste filtrée is_deleted côté serveur).
-  Future<List<Medication>> getMedicaments(String token) async {
-    final response = await http.get(
-      Uri.parse("${_api.baseUrl}/api/medicaments"),
-      headers: _api.authHeaders(token),
+  Future<List<Medication>> getMedicaments(String token, {int? aineId}) async {
+    final uri = Uri.parse("${_api.baseUrl}/api/medicaments").replace(
+      queryParameters: aineId != null ? {'aineId': aineId.toString()} : null,
     );
+    final response = await http.get(uri, headers: _api.authHeaders(token));
 
     if (response.statusCode != 200) {
       throw Exception("Erreur ${response.statusCode}: ${response.body}");
