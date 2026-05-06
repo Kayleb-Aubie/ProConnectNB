@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/medication.dart';
@@ -30,9 +31,13 @@ class MedicationService {
   Future<bool> createMedicament(Map<String, dynamic> body, String token) async {
     final response = await http.post(
       Uri.parse("${_api.baseUrl}/api/medicaments"),
-      headers: _api.authHeaders(token),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
       body: jsonEncode(body),
     );
+
     return response.statusCode == 200 || response.statusCode == 201;
   }
 

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -100,8 +102,9 @@ class _MedicationListScreenState extends State<MedicationListScreen> {
 
     await rappelProvider.fetchRappels(auth);
 
-    for (final r
-        in rappelProvider.rappels.where((x) => x.medicamentId == medicamentId)) {
+    for (final r in rappelProvider.rappels.where(
+      (x) => x.medicamentId == medicamentId,
+    )) {
       try {
         await NotificationService.scheduleDailyRappel(
           id: r.id,
@@ -127,8 +130,7 @@ class _MedicationListScreenState extends State<MedicationListScreen> {
       if (medId != null) {
         await rappelProvider.deleteRappelByMedicamentId(medId, auth);
       }
-      final success =
-          await medicationProvider.deleteMedication(id, auth: auth);
+      final success = await medicationProvider.deleteMedication(id, auth: auth);
       if (!success) allSuccess = false;
     }
 
@@ -184,36 +186,47 @@ class _MedicationListScreenState extends State<MedicationListScreen> {
   }
 
   Widget _buildMedicationAvatar(Medication med, bool isSelected) {
+    const double imageSize = 120;
+
     if (isSelected) {
       return Container(
-        width: 48,
-        height: 48,
+        width: imageSize,
+        height: imageSize,
         decoration: BoxDecoration(
           color: const Color(0xFF4A9FE8),
-          shape: BoxShape.circle,
-          border: Border.all(color: const Color(0xFF7DC4FF), width: 1.5),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: const Color(0xFF7DC4FF), width: 2),
         ),
-        child: const Icon(Icons.check_rounded, color: Colors.white, size: 22),
+        child: const Icon(Icons.check_rounded, color: Colors.white, size: 42),
       );
     }
 
-    if (med.urlPhoto != null && med.urlPhoto!.trim().isNotEmpty) {
+    final photo = med.urlPhoto?.trim();
+
+    if (photo != null && photo.isNotEmpty) {
       return Container(
-        width: 48,
-        height: 48,
+        width: imageSize,
+        height: imageSize,
         decoration: BoxDecoration(
-          shape: BoxShape.circle,
+          borderRadius: BorderRadius.circular(22),
           border: Border.all(
-            color: const Color(0xFF4A9FE8).withOpacity(0.3),
-            width: 1.5,
+            color: const Color(0xFF4A9FE8).withOpacity(0.4),
+            width: 2,
           ),
         ),
-        child: ClipOval(
-          child: Image.network(
-            med.urlPhoto!,
-            fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => _defaultAvatar(med),
-          ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: photo.startsWith('http')
+              ? Image.network(
+                  photo,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => _defaultAvatar(med),
+                )
+              : Image.file(
+                  File(photo),
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => _defaultAvatar(med),
+                ),
         ),
       );
     }
@@ -222,19 +235,21 @@ class _MedicationListScreenState extends State<MedicationListScreen> {
   }
 
   Widget _defaultAvatar(Medication med) {
+    const double imageSize = 120;
+
     return Container(
-      width: 48,
-      height: 48,
+      width: imageSize,
+      height: imageSize,
       decoration: BoxDecoration(
         color: med.isActive
             ? const Color(0xFF004E92).withOpacity(0.5)
             : Colors.white.withOpacity(0.05),
-        shape: BoxShape.circle,
+        borderRadius: BorderRadius.circular(22),
         border: Border.all(
           color: med.isActive
               ? const Color(0xFF4A9FE8).withOpacity(0.35)
               : Colors.white.withOpacity(0.1),
-          width: 1,
+          width: 2,
         ),
       ),
       child: Icon(
@@ -242,7 +257,7 @@ class _MedicationListScreenState extends State<MedicationListScreen> {
         color: med.isActive
             ? const Color(0xFF7DC4FF)
             : Colors.white.withOpacity(0.25),
-        size: 22,
+        size: 48,
       ),
     );
   }
@@ -540,7 +555,6 @@ class _MedicationListScreenState extends State<MedicationListScreen> {
         ),
         child: Row(
           children: [
-            // Avatar
             GestureDetector(
               onTap: () => _toggleSelection(med.id),
               child: _buildMedicationAvatar(med, isSelected),
@@ -548,7 +562,6 @@ class _MedicationListScreenState extends State<MedicationListScreen> {
 
             const SizedBox(width: 14),
 
-            // Infos
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -567,10 +580,8 @@ class _MedicationListScreenState extends State<MedicationListScreen> {
                       decorationColor: Colors.white.withOpacity(0.3),
                     ),
                   ),
-
                   const SizedBox(height: 4),
 
-                  // Marque + dosage
                   Row(
                     children: [
                       if ((med.marque ?? '').isNotEmpty) ...[
@@ -609,7 +620,6 @@ class _MedicationListScreenState extends State<MedicationListScreen> {
 
                   const SizedBox(height: 6),
 
-                  // Horaires sous forme de chips
                   if (med.schedules.isNotEmpty)
                     Wrap(
                       spacing: 6,
@@ -661,7 +671,6 @@ class _MedicationListScreenState extends State<MedicationListScreen> {
 
                   const SizedBox(height: 6),
 
-                  // Badge statut
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,
@@ -697,7 +706,6 @@ class _MedicationListScreenState extends State<MedicationListScreen> {
 
             const SizedBox(width: 8),
 
-            // Switch
             Transform.scale(
               scale: 0.85,
               child: Switch(
@@ -714,30 +722,36 @@ class _MedicationListScreenState extends State<MedicationListScreen> {
 
             const SizedBox(width: 6),
 
-            // Checkbox sélection
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              height: 28,
-              width: 28,
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? const Color(0xFF4A9FE8)
-                    : Colors.transparent,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: isSelected
-                      ? const Color(0xFF4A9FE8)
-                      : Colors.white.withOpacity(0.22),
-                  width: 1.5,
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => _toggleSelection(med.id),
+              child: Padding(
+                padding: const EdgeInsets.all(6),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  height: 32,
+                  width: 32,
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? const Color(0xFF4A9FE8)
+                        : Colors.transparent,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isSelected
+                          ? const Color(0xFF4A9FE8)
+                          : Colors.white.withOpacity(0.35),
+                      width: 1.8,
+                    ),
+                  ),
+                  child: isSelected
+                      ? const Icon(
+                          Icons.check_rounded,
+                          color: Colors.white,
+                          size: 18,
+                        )
+                      : null,
                 ),
               ),
-              child: isSelected
-                  ? const Icon(
-                      Icons.check_rounded,
-                      color: Colors.white,
-                      size: 16,
-                    )
-                  : null,
             ),
           ],
         ),
