@@ -122,27 +122,32 @@ class _MedicationListScreenState extends State<MedicationListScreen> {
     final auth = context.read<AuthProvider>();
     bool allSuccess = true;
 
-    for (final id in _selectedIds.toList()) {
-      final medId = int.tryParse(id);
-      if (medId != null) {
-        await rappelProvider.deleteRappelByMedicamentId(medId, auth);
+    try {
+      for (final id in _selectedIds.toList()) {
+        final medId = int.tryParse(id);
+        if (medId != null) {
+          await rappelProvider.deleteRappelByMedicamentId(medId, auth);
+        }
+        final success =
+            await medicationProvider.deleteMedication(id, auth: auth);
+        if (!success) allSuccess = false;
       }
-      final success =
-          await medicationProvider.deleteMedication(id, auth: auth);
-      if (!success) allSuccess = false;
+    } catch (_) {
+      allSuccess = false;
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isDeleting = false;
+          _selectedIds.clear();
+        });
+        _showSnackBar(
+          allSuccess
+              ? 'Traitements supprimés'
+              : 'Erreur lors de la suppression',
+          isError: !allSuccess,
+        );
+      }
     }
-
-    if (!mounted) return;
-
-    setState(() {
-      _isDeleting = false;
-      _selectedIds.clear();
-    });
-
-    _showSnackBar(
-      allSuccess ? 'Traitements supprimés' : 'Erreur lors de la suppression',
-      isError: !allSuccess,
-    );
   }
 
   void _openEditScreen(Medication med) {
