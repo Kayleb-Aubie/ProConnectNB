@@ -7,9 +7,8 @@ namespace backend.Services.Interfaces;
 public interface IAineService
 {
     Task<IReadOnlyList<AineResponseDto>> GetAll();
-    Task<IReadOnlyList<AineResponseDto>> GetMine(long procheAidantId);
-    Task<AineResponseDto?> GetById(long id);
     Task<IReadOnlyList<AineResponseDto>> GetForProcheAidant(long procheAidantId);
+    Task<AineResponseDto?> GetById(long id);
     Task<IdResponseDto> Create(UpsertAineRequestDto dto);
     Task<bool> Update(long id, UpsertAineRequestDto dto);
     Task<bool> Delete(long id);

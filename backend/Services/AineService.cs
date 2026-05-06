@@ -21,7 +21,7 @@ public class AineService(AppDbContext db) : IAineService
         Telephone = a.Telephone,
         Email = a.Email,
         DateNaissance = a.DateNaissance,
-        Adresse = new AdresseDto
+        Adresse = a.Adresse == null ? null : new AdresseDto
         {
             Numero = a.Adresse.Numero,
             Rue = a.Adresse.Rue,
