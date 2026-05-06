@@ -2,6 +2,7 @@ using System.Security.Claims;
 using backend.Dtos.Aines;
 using backend.Infrastructure;
 using backend.Services.Interfaces;
+using System.Security.Claims;
 
 namespace backend.Endpoints;
 
@@ -10,6 +11,11 @@ public static class AinesEndpoints
     public static void MapAinesEndpoints(this WebApplication app)
     {
         var route = app.MapGroup("/api/aines").WithTags("Aines").RequireAuthorization();
+
+        route.MapGet("/mine", GetMine)
+            .Produces<IReadOnlyList<AineResponseDto>>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status401Unauthorized)
+            .WithSummary("Récupère les aînés rattachés au proche aidant connecté (via PartageSuivi)");
 
         route.MapGet("/", GetAll)
             .Produces<IReadOnlyList<AineResponseDto>>(StatusCodes.Status200OK)
@@ -47,11 +53,27 @@ public static class AinesEndpoints
         return Results.Ok(items);
     }
 
+    private static async Task<IResult> GetMine(ClaimsPrincipal user, IAineService svc)
+    {
+        var idRaw = user.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!long.TryParse(idRaw, out var userId)) return Results.Unauthorized();
+        var items = await svc.GetForProcheAidant(userId);
+        return Results.Ok(items);
+    }
+
+<<<<<<< HEAD
     private static async Task<IResult> GetMine(ClaimsPrincipal principal, IAineService svc)
     {
         var userIdStr = principal.FindFirstValue(ClaimTypes.NameIdentifier);
         if (!long.TryParse(userIdStr, out var userId)) return Results.Unauthorized();
         var items = await svc.GetMine(userId);
+=======
+    private static async Task<IResult> GetMine(ClaimsPrincipal user, IAineService svc)
+    {
+        var idRaw = user.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!long.TryParse(idRaw, out var userId)) return Results.Unauthorized();
+        var items = await svc.GetForProcheAidant(userId);
+>>>>>>> 4bb76cb1532e7d09b215f3053272ece725d7670f
         return Results.Ok(items);
     }
 
