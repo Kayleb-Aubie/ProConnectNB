@@ -93,6 +93,7 @@ public class MedicamentService(AppDbContext db) : IMedicamentService
         var entity = await _db.Medicaments.FirstOrDefaultAsync(m => m.Id == id && !m.IsDeleted);
         if (entity == null) return false;
         entity.IsDeleted = true;
+        entity.IsActive = false;
         await _db.SaveChangesAsync();
         return true;
     }
