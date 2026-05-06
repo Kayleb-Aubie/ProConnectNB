@@ -19,9 +19,8 @@ public static class MedicamentsEndpoints
             .WithSummary("Récupère un médicament par id");
 
         route.MapPost("/", Create)
-            .RequireAuthorization("AdminOnly")
             .Produces(StatusCodes.Status201Created)
-            .WithSummary("Crée un médicament (Admin)");
+            .WithSummary("Crée un médicament");
 
         route.MapPut("/{id:long}", Update)
             .Produces(StatusCodes.Status204NoContent)
